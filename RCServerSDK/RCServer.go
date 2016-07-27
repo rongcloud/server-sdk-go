@@ -107,7 +107,7 @@ func getSignature(rcServer *RCServer) (nonce, timestamp, signature string) {
 }
 
 //API签名
-func fillHeader(req *httplib.BeegoHttpRequest, rcServer *RCServer) {
+func fillHeader(req *httplib.BeegoHTTPRequest, rcServer *RCServer) {
 	nonce, timestamp, signature := getSignature(rcServer)
 	req.Header("App-Key", rcServer.appKey)
 	req.Header("Nonce", nonce)
