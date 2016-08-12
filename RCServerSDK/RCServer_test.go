@@ -10,7 +10,7 @@ var rcServer *RCServer
 
 //初始化RCServer_xml 方式
 func Test_NewRCServer_xml(t *testing.T) {
-	if _rcServer, initError := NewRCServer("your_appKey", "your_appSecret", "xml"); initError != nil || _rcServer == nil {
+	if _rcServer, initError := NewRCServer("your_appKey", "your_appSecret", "xml", ""); initError != nil || _rcServer == nil {
 		t.Error("初始化RCServer_xml：测试失败！！！")
 	} else {
 		rcServer = _rcServer
@@ -20,7 +20,7 @@ func Test_NewRCServer_xml(t *testing.T) {
 
 //初始化RCServer_json 方式
 func Test_NewRCServer_json(t *testing.T) {
-	if _rcServer, initError := NewRCServer("your_appKey", "your_appSecret", "json"); initError != nil || _rcServer == nil {
+	if _rcServer, initError := NewRCServer("your_appKey", "your_appSecret", "json", ""); initError != nil || _rcServer == nil {
 		t.Error("初始化RCServer_json：测试失败！！！")
 	} else {
 		rcServer = _rcServer
@@ -30,7 +30,7 @@ func Test_NewRCServer_json(t *testing.T) {
 
 //初始化RCServer_other 方式
 func Test_NewRCServer_otherType(t *testing.T) {
-	if _rcServer, initError := NewRCServer("your_appKey", "your_appSecret", "foo"); initError != nil || _rcServer == nil {
+	if _rcServer, initError := NewRCServer("your_appKey", "your_appSecret", "foo", ""); initError != nil || _rcServer == nil {
 		t.Log("初始化RCServer_other：测试通过。")
 
 	} else {

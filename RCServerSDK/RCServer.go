@@ -75,7 +75,7 @@ type RCServer struct {
 }
 
 //初始化RCServer
-func NewRCServer(appKey, appSecret, format string) (rcServer *RCServer, initError error) {
+func NewRCServer(appKey, appSecret, format, apiUrl string) (rcServer *RCServer, initError error) {
 	if len(appKey) == 0 {
 		return nil, errors.New("appKey不能为空！")
 	} else if len(appSecret) == 0 {
@@ -83,11 +83,16 @@ func NewRCServer(appKey, appSecret, format string) (rcServer *RCServer, initErro
 	} else if !(format == "json" || format == "xml") {
 		return nil, errors.New("format格式只能为\"json\"或\"xml\"！")
 	}
+
+	if len(apiUrl) == 0 {
+		apiUrl = RC_SERVER_API_URL
+	}
+
 	server := &RCServer{
 		appKey:    appKey,
 		appSecret: appSecret,
 		format:    "." + format,
-		apiUrl:    RC_SERVER_API_URL,
+		apiUrl:    apiUrl,
 	}
 	return server, nil
 }
