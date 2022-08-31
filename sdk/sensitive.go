@@ -2,8 +2,9 @@ package sdk
 
 import (
 	"encoding/json"
-	"github.com/astaxie/beego/httplib"
 	"time"
+
+	"github.com/beego/beego/v2/client/httplib"
 )
 
 // ListWordFilterResult listWordFilter返回结果

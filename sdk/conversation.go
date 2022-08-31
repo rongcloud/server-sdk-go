@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/astaxie/beego/httplib"
+	"github.com/beego/beego/v2/client/httplib"
 )
 
 // ConversationType 会话类型
@@ -40,14 +40,14 @@ const (
 )
 
 // ConversationTop :会话置顶
-//*
-//@param userId	：必传	            用户ID，会话所属的用户
-//@param conversationType：不必传	会话类型。支持的会话类型包括：1（二人会话）、3（群组会话）、6（系统会话）。
-//@param targetId:	必传	            需要设置的目标 ID，根据会话类型不同为单聊用户 ID、群聊 ID、系统目标 ID
-//@param setTop	:	必传		            true 表示置顶，false 表示取消置顶。
+// *
+// @param userId	：必传	            用户ID，会话所属的用户
+// @param conversationType：不必传	会话类型。支持的会话类型包括：1（二人会话）、3（群组会话）、6（系统会话）。
+// @param targetId:	必传	            需要设置的目标 ID，根据会话类型不同为单聊用户 ID、群聊 ID、系统目标 ID
+// @param setTop	:	必传		            true 表示置顶，false 表示取消置顶。
 //
-//@return error
-//*/
+// @return error
+// */
 func (rc *RongCloud) ConversationTop(conversationType ConversationType, userId, targetId, setTop string) error {
 	if len(userId) == 0 {
 		return RCErrorNew(1002, "Paramer 'userId' is required")

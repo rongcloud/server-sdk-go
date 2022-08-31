@@ -4,13 +4,13 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/url"
 	"os"
 	"syscall"
 
-	"github.com/astaxie/beego/httplib"
+	"github.com/beego/beego/v2/client/httplib"
 )
 
 func (rc *RongCloud) do(b *httplib.BeegoHTTPRequest) (body []byte, err error) {
@@ -80,9 +80,9 @@ func (rc *RongCloud) httpRequest(b *httplib.BeegoHTTPRequest) (body []byte, err 
 		if err != nil {
 			return nil, err
 		}
-		body, err = ioutil.ReadAll(reader)
+		body, err = io.ReadAll(reader)
 	} else {
-		body, err = ioutil.ReadAll(resp.Body)
+		body, err = io.ReadAll(resp.Body)
 	}
 	if err = checkHTTPResponseCode(body); err != nil {
 		return nil, err
@@ -112,9 +112,9 @@ func (rc *RongCloud) doV2(b *httplib.BeegoHTTPRequest) (body []byte, err error) 
 		if err != nil {
 			return nil, err
 		}
-		body, err = ioutil.ReadAll(reader)
+		body, err = io.ReadAll(reader)
 	} else {
-		body, err = ioutil.ReadAll(resp.Body)
+		body, err = io.ReadAll(resp.Body)
 	}
 	if err = checkHTTPResponseCodeV2(body); err != nil {
 		return nil, err

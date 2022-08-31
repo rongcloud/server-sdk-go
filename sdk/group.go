@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/astaxie/beego/httplib"
+	"github.com/beego/beego/v2/client/httplib"
 )
 
 // Group 群组信息
@@ -37,12 +37,12 @@ type GroupRemarksGetObj struct {
 }
 
 // GroupRemarksGetResObj :/group/remarks/get.json 查询群成员推送备注名
-//*
+// *
 // @param : userId : 群成员用户 ID
 // @param : groupId : 群ID
 // response : byte数组
 // 文档： https://doc.rongcloud.cn/imserver/server/v1/group/get-remark-for-group-push
-//*/
+// */
 func (rc *RongCloud) GroupRemarksGetResObj(userId string, groupId string) (GroupRemarksGetObj, error) {
 	var (
 		result = GroupRemarksGetObj{}
@@ -69,12 +69,12 @@ func (rc *RongCloud) GroupRemarksGetResObj(userId string, groupId string) (Group
 }
 
 // GroupRemarksGet :/group/remarks/get.json 查询群成员推送备注名
-//*
+// *
 // @param : userId : 群成员用户 ID
 // @param : groupId : 群ID
 // response : byte数组
 // 文档： https://doc.rongcloud.cn/imserver/server/v1/group/get-remark-for-group-push
-//*/
+// */
 func (rc *RongCloud) GroupRemarksGet(userId string, groupId string) ([]byte, error) {
 	if len(userId) == 0 {
 		return nil, RCErrorNew(1002, "Paramer 'userId' is required")
@@ -95,12 +95,11 @@ func (rc *RongCloud) GroupRemarksGet(userId string, groupId string) ([]byte, err
 }
 
 // GroupRemarksDel :/group/remarks/del.json 删除群成员推送备注名
-//*
+// *
 // @param : userId : 群成员用户 ID
 // @param : groupId : 群ID
 //
-//
-//*/
+// */
 func (rc *RongCloud) GroupRemarksDel(userId string, groupId string) error {
 	if len(userId) == 0 {
 		return RCErrorNew(1002, "Paramer 'userId' is required")
@@ -121,12 +120,12 @@ func (rc *RongCloud) GroupRemarksDel(userId string, groupId string) error {
 }
 
 // GroupRemarksSet :/group/remarks/set.json 设置指定群成员推送备注
-//*
+// *
 // @param : userId : 群成员用户ID
 // @param : groupId : 群ID
 // @param : remark : 群成员推送备注
 //
-//*/
+// */
 func (rc *RongCloud) GroupRemarksSet(userId string, groupId string, remark string) error {
 	if len(userId) == 0 {
 		return RCErrorNew(1002, "Paramer 'userId' is required")
@@ -151,11 +150,11 @@ func (rc *RongCloud) GroupRemarksSet(userId string, groupId string, remark strin
 }
 
 // GroupUserGagAdd : 添加禁言成员 /group/user/gag/add.json
-//*
+// *
 // @param userId:用户 ID，每次添加最多不超过 20 个用户。
 // @param groupId: 群组 ID，为空时则设置用户在加入的所有群组中都不能发送消息。
 // @param minute : // 禁言时长，以分钟为单位，最大值为 43200 分钟，为 0 表示永久禁言。
-//*/
+// */
 func (rc *RongCloud) GroupUserGagAdd(userId string, groupId string, minute string) error {
 	if len(userId) == 0 {
 		return RCErrorNew(1002, "Paramer 'userId' is required")
@@ -196,11 +195,11 @@ type GroupUserQueryGroup struct {
 }
 
 // GroupUserQueryResObj : 根据用户 ID 查询该用户加入的所有群组，返回群组 ID 及群组名称。
-//*
+// *
 // @param  userId:用户 ID
 // response: GroupUserQueryObj
 // 文档： https://doc.rongcloud.cn/imserver/server/v1/group/query-group-by-user
-//*/
+// */
 func (rc *RongCloud) GroupUserQueryResObj(userId string) (GroupUserQueryObj, error) {
 	var (
 		result = GroupUserQueryObj{}
@@ -224,10 +223,10 @@ func (rc *RongCloud) GroupUserQueryResObj(userId string) (GroupUserQueryObj, err
 }
 
 // GroupUserQuery : 根据用户 ID 查询该用户加入的所有群组，返回群组 ID 及群组名称。
-//*
+// *
 // @param  userId:用户 ID
 // 文档 ： https://doc.rongcloud.cn/imserver/server/v1/group/query-group-by-user
-//*/
+// */
 func (rc *RongCloud) GroupUserQuery(userId string) ([]byte, error) {
 	if len(userId) == 0 {
 		return nil, RCErrorNew(1002, "Paramer 'userId' is required")

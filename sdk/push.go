@@ -5,10 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/astaxie/beego/httplib"
+	"github.com/beego/beego/v2/client/httplib"
 )
 
 // PlatForm 广播类型
@@ -100,10 +99,10 @@ type Audience struct {
 }
 
 type PushNotification struct {
-	Title       string                 `json:"title,omitempty"`   // Title 通知栏显示标题，最长不超过 50 个字符。
-	PushContent string                 `json:"pushContent"`       // PushContent 推送消息内容。
-	IOS         IOSPush                `json:"ios,omitempty"`     // IOS 设置 iOS 平台下的推送及附加信息，详细查看 ios 结构说明。
-	Android     map[string]interface{} `json:"android,omitempty"` // Android 设置 Android 平台下的推送及附加信息，详细查看 android 结构说明。
+	Title       string      `json:"title,omitempty"`   // Title 通知栏显示标题，最长不超过 50 个字符。
+	PushContent string      `json:"pushContent"`       // PushContent 推送消息内容。
+	IOS         IOSPush     `json:"ios,omitempty"`     // IOS 设置 iOS 平台下的推送及附加信息，详细查看 ios 结构说明。
+	Android     AndroidPush `json:"android,omitempty"` // Android 设置 Android 平台下的推送及附加信息，详细查看 android 结构说明。
 }
 
 type PushCustomData struct {
@@ -167,15 +166,17 @@ type PushCustomObj struct {
 }
 
 // PushCustomObj : 全量用户不落地通知  /push/custom.json
-//*
-//  @param: p：参考这个TestRongCloud_PushCustom 单元测试传递的参数
-//  @param: platform []string 目标操作系统，iOS、Android 最少传递一个。如果需要给两个系统推送消息时，则需要全部填写。
-//  @param: audience  string 推送条件，包括：tag 、tag_or 、packageName 、 is_to_all。
-//  @param: notification string 按操作系统类型推送消息内容，如 platform 中设置了给 iOS 和 Android 系统推送消息，而在 notification 中只设置了 iOS 的推送内容，则 Android 的推送内容为最初 alert 设置的内容，详细查看 notification 结构说明。
+// *
+//
+//	@param: p：参考这个TestRongCloud_PushCustom 单元测试传递的参数
+//	@param: platform []string 目标操作系统，iOS、Android 最少传递一个。如果需要给两个系统推送消息时，则需要全部填写。
+//	@param: audience  string 推送条件，包括：tag 、tag_or 、packageName 、 is_to_all。
+//	@param: notification string 按操作系统类型推送消息内容，如 platform 中设置了给 iOS 和 Android 系统推送消息，而在 notification 中只设置了 iOS 的推送内容，则 Android 的推送内容为最初 alert 设置的内容，详细查看 notification 结构说明。
+//
 // 可以构建为上面的map或者struct 进行json序列化之后调用PushCustom
 // response: 返回结构体
 // 文档： https://doc.rongcloud.cn/imserver/server/v1/push-plus#push_custom
-//*//
+// *//
 func (rc *RongCloud) PushCustomObj(data PushCustomData) (PushCustomObj, error) {
 	var (
 		err    error
@@ -203,16 +204,18 @@ func (rc *RongCloud) PushCustomObj(data PushCustomData) (PushCustomObj, error) {
 }
 
 // PushCustomResObj : 全量用户不落地通知  /push/custom.json
-//*
-//  @param: p：参考这个TestRongCloud_PushCustom 单元测试传递的参数
-//  @param: platform []string 目标操作系统，iOS、Android 最少传递一个。如果需要给两个系统推送消息时，则需要全部填写。
-//  @param: audience  string 推送条件，包括：tag 、tag_or 、packageName 、 is_to_all。
-//  @param: notification string 按操作系统类型推送消息内容，如 platform 中设置了给 iOS 和 Android 系统推送消息，而在 notification 中只设置了 iOS 的推送内容，则 Android 的推送内容为最初 alert 设置的内容，详细查看 notification 结构说明。
+// *
+//
+//	@param: p：参考这个TestRongCloud_PushCustom 单元测试传递的参数
+//	@param: platform []string 目标操作系统，iOS、Android 最少传递一个。如果需要给两个系统推送消息时，则需要全部填写。
+//	@param: audience  string 推送条件，包括：tag 、tag_or 、packageName 、 is_to_all。
+//	@param: notification string 按操作系统类型推送消息内容，如 platform 中设置了给 iOS 和 Android 系统推送消息，而在 notification 中只设置了 iOS 的推送内容，则 Android 的推送内容为最初 alert 设置的内容，详细查看 notification 结构说明。
+//
 // 可以构建为上面的map或者struct 进行json序列化之后调用PushCustom
 // 请求按照PushCustomData结构体请求：
 // response: 返回结构体
 // 文档： https://doc.rongcloud.cn/imserver/server/v1/push-plus#push_custom
-//*//
+// *//
 func (rc *RongCloud) PushCustomResObj(p []byte) (PushCustomObj, error) {
 	var (
 		err    error
@@ -236,16 +239,18 @@ func (rc *RongCloud) PushCustomResObj(p []byte) (PushCustomObj, error) {
 }
 
 // PushCustom : 全量用户不落地通知  /push/custom.json
-//*
-//  @param: p：参考这个TestRongCloud_PushCustom 单元测试传递的参数
-//  @param: platform []string 目标操作系统，iOS、Android 最少传递一个。如果需要给两个系统推送消息时，则需要全部填写。
-//  @param: audience  string 推送条件，包括：tag 、tag_or 、packageName 、 is_to_all。
-//  @param: notification string 按操作系统类型推送消息内容，如 platform 中设置了给 iOS 和 Android 系统推送消息，而在 notification 中只设置了 iOS 的推送内容，则 Android 的推送内容为最初 alert 设置的内容，详细查看 notification 结构说明。
-//请求按照PushCustomData结构体请求：
+// *
+//
+//	@param: p：参考这个TestRongCloud_PushCustom 单元测试传递的参数
+//	@param: platform []string 目标操作系统，iOS、Android 最少传递一个。如果需要给两个系统推送消息时，则需要全部填写。
+//	@param: audience  string 推送条件，包括：tag 、tag_or 、packageName 、 is_to_all。
+//	@param: notification string 按操作系统类型推送消息内容，如 platform 中设置了给 iOS 和 Android 系统推送消息，而在 notification 中只设置了 iOS 的推送内容，则 Android 的推送内容为最初 alert 设置的内容，详细查看 notification 结构说明。
+//
+// 请求按照PushCustomData结构体请求：
 // 可以构建为上面的map或者struct 进行json序列化之后调用PushCustom
 // response: 返回byte数组
 // 文档 ： https://doc.rongcloud.cn/imserver/server/v1/push-plus#push_custom
-//*//
+// *//
 func (rc *RongCloud) PushCustom(p []byte) ([]byte, error) {
 	var err error
 	req := httplib.Post(rc.rongCloudURI + "/push/custom.json")
@@ -268,15 +273,6 @@ func (rc *RongCloud) PushUser(notification *PushNotification, users ...string) e
 
 	if userLens := len(users); userLens > 100 || userLens <= 0 {
 		return errors.New("Invalid users")
-	}
-
-	if notification.Android != nil {
-		android := make(map[string]interface{})
-		for key, val := range notification.Android {
-			k := strings.ToLower(key)
-			android[k] = val
-		}
-		notification.Android = android
 	}
 
 	var err error

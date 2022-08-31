@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/astaxie/beego/httplib"
+	"github.com/beego/beego/v2/client/httplib"
 )
 
 // ChatRoomInfo 聊天室信息
@@ -71,11 +71,13 @@ type ChatUserExistObj struct {
 }
 
 // ChatUserExistResObj :/chatroom/user/exist.json 查询用户是否加入聊天室
-//*
-//  @param: chatroomId，要查询的聊天室 ID
-//  @param: userId, 要查询的用户 ID
-//  response: ChatUserExistObj
-//*//
+// *
+//
+//	@param: chatroomId，要查询的聊天室 ID
+//	@param: userId, 要查询的用户 ID
+//	response: ChatUserExistObj
+//
+// *//
 func (rc *RongCloud) ChatUserExistResObj(chatroomId, userId string) (ChatUserExistObj, error) {
 	var (
 		result = ChatUserExistObj{}
@@ -104,11 +106,13 @@ func (rc *RongCloud) ChatUserExistResObj(chatroomId, userId string) (ChatUserExi
 }
 
 // ChatUserExist :/chatroom/user/exist.json 查询用户是否加入聊天室
-//*
-//  @param: chatroomId，要查询的聊天室 ID
-//  @param: userId, 要查询的用户 ID
-//  response: byte数组
-//*//
+// *
+//
+//	@param: chatroomId，要查询的聊天室 ID
+//	@param: userId, 要查询的用户 ID
+//	response: byte数组
+//
+// *//
 func (rc *RongCloud) ChatUserExist(chatroomId, userId string) ([]byte, error) {
 	if len(chatroomId) == 0 {
 		return nil, RCErrorNew(1002, "Paramer 'chatroomId' is required")

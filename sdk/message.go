@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/astaxie/beego/httplib"
+	"github.com/beego/beego/v2/client/httplib"
 )
 
 const (
@@ -492,14 +492,14 @@ type UgMessageExtension struct {
 }
 
 // MessageExpansionSet : 设置消息扩展  /message/expansion/set.json
-//*
+// *
 // @param  msgUID:消息唯一标识 ID，可通过全量消息路由功能获取。详见全量消息路由。
 // @param  userId:操作者用户 ID，即需要为指定消息（msgUID）设置扩展信息的用户 ID。
 // @param  conversationType:会话类型。支持的会话类型包括：1（二人会话）、3（群组会话）。
 // @param  targetId:目标 ID，根据不同的 conversationType，可能是用户 ID 或群组 ID。
 // @param  extraKeyVal:消息自定义扩展内容，JSON 结构，以 Key、Value 的方式进行设置，如：{"type":"3"}，单条消息可设置 300 个扩展信息，一次最多可以设置 100 个。
 // @param  isSyncSender:设置操作会生成“扩展操作消息”。该字段指定“扩展操作消息”的发送者是否可在客户端接收该消息。https://doc.rongcloud.cn/imserver/server/v1/message/expansion#set
-//*/
+// */
 func (rc *RongCloud) MessageExpansionSet(msgUID, userId, conversationType, targetId, extraKeyVal string, isSyncSender int) error {
 	if len(msgUID) == 0 {
 		return RCErrorNew(1002, "Paramer 'msgUID' is required")
@@ -539,14 +539,14 @@ func (rc *RongCloud) MessageExpansionSet(msgUID, userId, conversationType, targe
 }
 
 // MessageExpansionDel : 删除消息扩展  /message/expansion/delete.json
-//*
+// *
 // @param  msgUID:消息唯一标识 ID，可通过全量消息路由功能获取。详见全量消息路由。
 // @param  userId:操作者用户 ID，即需要为指定消息（msgUID）删除扩展信息的用户 ID。
 // @param  conversationType:会话类型。支持的会话类型包括：1（二人会话）、3（群组会话）。
 // @param  targetId:目标 ID，根据不同的 conversationType，可能是用户 ID 或群组 ID。
 // @param  extraKeyVal:消息自定义扩展内容，JSON 结构，以 Key、Value 的方式进行设置，如：{"type":"3"}，单条消息可设置 300 个扩展信息，一次最多可以设置 100 个。
 // @param  isSyncSender:设置操作会生成“扩展操作消息”。该字段指定“扩展操作消息”的发送者是否可在客户端接收该消息。具体请看。https://doc.rongcloud.cn/imserver/server/v1/message/expansion#delete
-//*/
+// */
 func (rc *RongCloud) MessageExpansionDel(msgUID, userId, conversationType, targetId, extraKey string, isSyncSender int) error {
 	if len(msgUID) == 0 {
 		return RCErrorNew(1002, "Paramer 'msgUID' is required")
@@ -588,14 +588,14 @@ func (rc *RongCloud) MessageExpansionDel(msgUID, userId, conversationType, targe
 // 超级群消息修改
 
 // UGMessageModify : 超级群消息修改 /ultragroup/msg/modify.json
-//*
+// *
 // @param  groupId:超级群 ID
 // @param  fromUserId:消息发送者
 // @param  msgUID:消息唯一标识
 // @param  content:消息所发送内容 最大128k
 // @param  busChannel:频道 Id，支持英文字母、数字组合，最长为 20 个字符
 // @param  msgRandom:请求唯一标识,，保证一分钟之内的请求幂等
-//*/
+// */
 func (rc *RongCloud) UGMessageModify(groupId, fromUserId, msgUID, content string, options ...UgMessageExtension) ([]byte, error) {
 	if len(groupId) == 0 {
 		return nil, RCErrorNew(1002, "Paramer 'groupId' is required")
@@ -660,11 +660,11 @@ type UGMessageGetDataList struct {
 }
 
 // UGMessageGetObj  : 根据消息 ID 批量获取超级群消息 /ultragroup/msg/get
-//*
+// *
 // @param  groupId:超级群 ID
 // @param  msgList:消息参数数组   每个元素是UGMessageData
 // response： 返回结构体
-//*/
+// */
 func (rc *RongCloud) UGMessageGetObj(groupId string, msgList []UGMessageData, options ...MsgOption) (UGMessageGetData, error) {
 	respData := UGMessageGetData{}
 	if len(groupId) == 0 {
@@ -702,11 +702,11 @@ func (rc *RongCloud) UGMessageGetObj(groupId string, msgList []UGMessageData, op
 }
 
 // UGMessageGet : 根据消息 ID 批量获取超级群消息 /ultragroup/msg/get
-//*
+// *
 // @param  groupId:超级群 ID
 // @param  msgList:消息参数数组   每个元素是UGMessageData
 // response： 返回byte数组
-//*/
+// */
 func (rc *RongCloud) UGMessageGet(groupId string, msgList []UGMessageData, options ...MsgOption) ([]byte, error) {
 	if len(groupId) == 0 {
 		return nil, RCErrorNew(1002, "Paramer 'groupId' is required")
