@@ -1165,3 +1165,43 @@ func (rc *RongCloud) ChatRoomQuery(chatRoomID []string) ([]ChatRoom, error) {
 
 	return data.ChatRooms, nil
 }
+
+func (rc *RongCloud) ChatRoomMuteAdd(chatRoomID string, minute uint) error {
+	if chatRoomID == "" {
+		return RCErrorNew(1002, "Paramer 'chatRoomID' is required")
+	}
+	if minute == 0 {
+		return RCErrorNew(1002, "Paramer 'minute' is required")
+	}
+
+	req := httplib.Post(rc.rongCloudURI + "/chatroom/ban/add." + ReqType)
+	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
+	rc.fillHeader(req)
+
+	req.Param("chatroomId", chatRoomID)
+	req.Param("minute", strconv.Itoa(int(minute)))
+
+	_, err := rc.do(req)
+	if err != nil {
+		rc.urlError(err)
+	}
+	return err
+}
+
+func (rc *RongCloud) ChatRoomMuteRemove(chatRoomID string) error {
+	if chatRoomID == "" {
+		return RCErrorNew(1002, "Paramer 'chatRoomID' is required")
+	}
+
+	req := httplib.Post(rc.rongCloudURI + "/chatroom/ban/rollback." + ReqType)
+	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
+	rc.fillHeader(req)
+
+	req.Param("chatroomId", chatRoomID)
+
+	_, err := rc.do(req)
+	if err != nil {
+		rc.urlError(err)
+	}
+	return err
+}
