@@ -1205,3 +1205,33 @@ func (rc *RongCloud) ChatRoomMuteRemove(chatRoomID string) error {
 	}
 	return err
 }
+
+// ChatroomMuteWhiteListUserAdd 添加禁言白名单
+/*
+ *@param  chatroomId:chatroomId。
+ *@param  []userId: 需要添加到白名单中的用户 ID，白名单中用户上限为 20 个，支持批量添加，单次添加上限不超过 20 。
+ *@return error
+ */
+func (rc *RongCloud) ChatroomMuteWhiteListUserAdd(chatroomId string, userIds []string) error {
+	if chatroomId == "" {
+		return RCErrorNew(1002, "Paramer 'chatroomId' is required")
+	}
+
+	if len(userIds) == 0 {
+		return RCErrorNew(1002, "Paramer 'userIds' is required")
+	}
+
+	req := httplib.Post(rc.rongCloudURI + "/chatroom/user/ban/whitelist/add." + ReqType)
+	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
+	rc.fillHeader(req)
+	req.Param("chatroomId", chatroomId)
+	for _, v := range userIds {
+		req.Param("userId", v)
+	}
+
+	_, err := rc.do(req)
+	if err != nil {
+		rc.urlError(err)
+	}
+	return err
+}
