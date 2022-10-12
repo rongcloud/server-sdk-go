@@ -80,6 +80,12 @@ type AndroidPush struct {
 	Image          string `json:"image,omitempty"`          // Image 华为推送自定义的通知栏消息右侧大图标 URL，如果不设置，则不展示通知栏右侧图标。URL 使用的协议必须是 HTTPS 协议，取值样例：https://example.com/image.png。图标文件须小于 512KB，图标建议规格大小：40dp x 40dp，弧角大小为 8dp，超出建议规格大小的图标会存在图片压缩或显示不全的情况。
 	LargeIconUri   string `json:"large_icon_uri,omitempty"` // LargeIconUri 小米推送自定义的通知栏消息右侧图标 URL，如果不设置，则不展示通知栏右侧图标。国内版仅 MIUI12 以上版本支持，以下版本均不支持；国际版支持。图片要求：大小120 * 120px，格式为 png 或者 jpg 格式。
 	Classification string `json:"classification,omitempty"` // Classification vivo 推送通道类型。0 为运营消息、1 为系统消息，默认为你在开发者后台应用标识 vivo 推送中设置的推送通道类型。
+	Fcm            Fcm    `json:"FCM,omitempty"`
+}
+type Fcm struct {
+	ChannelId   string `json:"channelId,omitempty"`
+	CollapseKey string `json:"collapse_key,omitempty"`
+	ImageUrl    string `json:"imageUrl,omitempty"`
 }
 
 // Notification 按操作系统类型推送消息内容，如 platform 中设置了给 iOS 和 Android 系统推送消息，而在 notification 中只设置了 iOS 的推送内容，则 Android 的推送内容为最初 alert 设置的内容。（必传）
