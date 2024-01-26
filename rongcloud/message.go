@@ -12,10 +12,10 @@ import (
 type MessagePrivatePublishRequest struct {
 	// 发送人用户 ID。
 	//注意：发送消息所使用的用户 ID 必须已获取过用户 Token，否则消息一旦触发离线推送，通知内无法正确显示发送者的用户信息。
-	FromUserId string `json:"fromUserId"`
+	FromUserId *string `json:"fromUserId"`
 
 	// 接收用户 ID，可以实现向多人发送消息，每次上限为 1000 人。
-	ToUserId string `json:"toUserId"`
+	ToUserId *string `json:"toUserId"`
 
 	RCMsg    RCMsg   `json:"-"`        // 消息类型参数的封装, 例如: TXTMsg(文本消息), HQVCMsg(高清语音消息)
 	PushData *string `json:"pushData"` // iOS 平台收到推送消息时，可从 payload 中获取 APNs 推送数据，对应字段名为 appData（提示：rc 字段中默认携带了消息基本信息）。Android 平台收到推送消息时对应字段名为 appData。
@@ -36,7 +36,7 @@ type MessagePrivatePublishRequest struct {
 	// 仅在 expansion 为 true 时有效。
 	//自定义的消息扩展信息，该字段接受 JSON 字符串格式的键值对（key-value pairs）。请注意区别于消息体内的 extra 字段，extraContent 的值在消息发送后可修改，修改方式请参见服务端 API 接口文档消息扩展，或参考各客户端「消息扩展」接口文档。
 	//KV 详细要求：以 Key、Value 的方式进行设置，如：{"type":"3"}。Key 最大 32 个字符，支持大小写英文字母、数字、 特殊字符+ = - _ 的组合方式，不支持汉字。Value 最大 4096 个字符。单次可设置最多 100 对 KV 扩展信息，单条消息最多可设置 300 对 KV 扩展信息。
-	ExtraContent *map[string]string `json:"extraContent"`
+	ExtraContent map[string]string `json:"extraContent"`
 
 	// 是否为静默消息，默认为 false，设为 true 时终端用户离线情况下不会收到通知提醒。
 	DisablePush *bool `json:"disablePush"`
@@ -46,38 +46,44 @@ type MessagePrivatePublishRequest struct {
 }
 
 func (r *MessagePrivatePublishRequest) MakeFormData() (url.Values, error) {
-	content, err := json.Marshal(r.RCMsg)
-	if err != nil {
-		return nil, err
-	}
 	res := url.Values{}
-	res.Set("fromUserId", r.FromUserId)
-	res.Set("toUserId", r.ToUserId)
-	res.Set("objectName", r.RCMsg.ObjectName())
-	res.Set("content", string(content))
+	if r.FromUserId != nil {
+		res.Set("fromUserId", StringValue(r.FromUserId))
+	}
+	if r.ToUserId != nil {
+		res.Set("toUserId", StringValue(r.ToUserId))
+	}
+	if r.RCMsg != nil {
+		content, err := json.Marshal(r.RCMsg)
+		if err != nil {
+			return nil, err
+		}
+		res.Set("objectName", r.RCMsg.ObjectName())
+		res.Set("content", string(content))
+	}
 	if r.PushData != nil {
-		res.Set("pushData", *r.PushData)
+		res.Set("pushData", StringValue(r.PushData))
 	}
 	if r.PushContent != nil {
-		res.Set("pushContent", *r.PushContent)
+		res.Set("pushContent", StringValue(r.PushContent))
 	}
 	if r.IsIncludeSender != nil {
-		res.Set("isIncludeSender", strconv.Itoa(*r.IsIncludeSender))
+		res.Set("isIncludeSender", strconv.Itoa(IntValue(r.IsIncludeSender)))
 	}
 	if r.Count != nil {
-		res.Set("count", strconv.Itoa(*r.Count))
+		res.Set("count", strconv.Itoa(IntValue(r.Count)))
 	}
 	if r.VerifyBlacklist != nil {
-		res.Set("verifyBlacklist", strconv.Itoa(*r.VerifyBlacklist))
+		res.Set("verifyBlacklist", strconv.Itoa(IntValue(r.VerifyBlacklist)))
 	}
 	if r.IsPersisted != nil {
-		res.Set("isPersisted", strconv.Itoa(*r.IsPersisted))
+		res.Set("isPersisted", strconv.Itoa(IntValue(r.IsPersisted)))
 	}
 	if r.ContentAvailable != nil {
-		res.Set("contentAvailable", strconv.Itoa(*r.ContentAvailable))
+		res.Set("contentAvailable", strconv.Itoa(IntValue(r.ContentAvailable)))
 	}
 	if r.Expansion != nil {
-		res.Set("expansion", strconv.FormatBool(*r.Expansion))
+		res.Set("expansion", strconv.FormatBool(BoolValue(r.Expansion)))
 	}
 	if r.ExtraContent != nil {
 		b, err := json.Marshal(r.ExtraContent)
@@ -87,10 +93,10 @@ func (r *MessagePrivatePublishRequest) MakeFormData() (url.Values, error) {
 		res.Set("extraContent", string(b))
 	}
 	if r.DisablePush != nil {
-		res.Set("disablePush", strconv.FormatBool(*r.DisablePush))
+		res.Set("disablePush", strconv.FormatBool(BoolValue(r.DisablePush)))
 	}
 	if r.PushExt != nil {
-		res.Set("pushExt", *r.PushExt)
+		res.Set("pushExt", StringValue(r.PushExt))
 	}
 	return res, nil
 }
