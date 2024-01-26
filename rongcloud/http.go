@@ -96,8 +96,8 @@ func (rc *RongCloud) do(b *http.Request, data interface{}) (*http.Response, erro
 
 // CodeResult 融云返回状态码和错误码
 type CodeResult struct {
-	Code         int    `json:"code"`         // 返回码，200 为正常。
-	ErrorMessage string `json:"errorMessage"` // 错误信息
+	Code         int    `json:"code"`                   // 返回码，200 为正常。
+	ErrorMessage string `json:"errorMessage,omitempty"` // 错误信息
 }
 
 // RCErrorNew 创建新的err信息
@@ -143,7 +143,7 @@ func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader,
 	requestUrl := fmt.Sprintf("%s%s", rc.rongCloudURI, path)
 	var req *http.Request
 	var err error
-	if ctx != nil {
+	if ctx == nil {
 		req, err = http.NewRequest(http.MethodPost, requestUrl, body)
 	} else {
 		req, err = http.NewRequestWithContext(ctx, http.MethodPost, requestUrl, body)
@@ -153,6 +153,7 @@ func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader,
 		return nil, err
 	}
 
+	// TODO content-type header move out
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rc.fillHeader(req)
 	resp, err := rc.do(req, &res)

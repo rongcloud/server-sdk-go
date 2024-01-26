@@ -726,7 +726,7 @@ type ChatroomMessagePriorityQueryResponse struct {
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/query-low-priority-message-type
 func (rc *RongCloud) ChatroomMessagePriorityQuery(ctx context.Context, req *ChatroomMessagePriorityQueryRequest) (*ChatroomMessagePriorityQueryResponse, error) {
 	resp := &ChatroomMessagePriorityQueryResponse{}
-	httpResp, err := rc.postFormUrlencoded(ctx, "", nil, &resp)
+	httpResp, err := rc.postFormUrlencoded(ctx, "/chatroom/message/priority/query.json", nil, &resp)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
 	return resp, err
 }

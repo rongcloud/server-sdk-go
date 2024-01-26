@@ -225,5 +225,51 @@ func TestRongCloud_ChatroomUserGagAdd(t *testing.T) {
 }
 
 func TestRongCloud_ChatroomMessagePriorityRemove(t *testing.T) {
+	rc := testNewRongCloud()
+	ctx := context.TODO()
+	// first list message priority
+	query1Resp, err := rc.ChatroomMessagePriorityQuery(ctx, nil)
+	if err != nil {
+		t.Fatalf("chatroom message priority query err: %s", err)
+	}
+	query1Data, _ := json.Marshal(query1Resp)
+	t.Logf("chatroom query response data %s", query1Data)
 
+	// add message priority
+	vcMsg := "RC:VcMsg"
+	imgMsg := "RC:ImgMsg"
+	addResp, err := rc.ChatroomMessagePriorityAdd(ctx, &ChatroomMessagePriorityAddRequest{
+		ObjectNames: []string{vcMsg, imgMsg},
+	})
+	if err != nil {
+		t.Fatalf("chatroom message priority add err %s", err)
+	}
+	addData, _ := json.Marshal(addResp)
+	t.Logf("chatroom message priority add resp: %s", addData)
+
+	// query after add
+	query2Resp, err := rc.ChatroomMessagePriorityQuery(ctx, nil)
+	if err != nil {
+		t.Fatalf("chatroom message priority query err: %s", err)
+	}
+	query2Data, _ := json.Marshal(query2Resp)
+	t.Logf("chatroom query response data %s", query2Data)
+
+	// remove message priority
+	removeResp, err := rc.ChatroomMessagePriorityRemove(ctx, &ChatroomMessagePriorityRemoveRequest{
+		ObjectNames: []string{vcMsg, imgMsg},
+	})
+	if err != nil {
+		t.Fatalf("chatroom message priority remove err %s", err)
+	}
+	removeData, _ := json.Marshal(removeResp)
+	t.Logf("chatroom message priority remove err: %s", removeData)
+
+	// query again after remove
+	query3Resp, err := rc.ChatroomMessagePriorityQuery(ctx, nil)
+	if err != nil {
+		t.Fatalf("chatroom message priority query err: %s", err)
+	}
+	query3Data, _ := json.Marshal(query3Resp)
+	t.Logf("chatroom query response data %s", query3Data)
 }
