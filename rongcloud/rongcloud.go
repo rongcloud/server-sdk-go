@@ -80,6 +80,11 @@ type RongCloud struct {
 	uriLock         sync.Mutex
 	globalTransport http.RoundTripper
 	HttpClient      *http.Client
+	Setting         Setting
+}
+
+type Setting struct {
+	DisableCodeCheck bool
 }
 
 // rongCloudExtra rongCloud扩展增加自定义融云服务器地址,请求超时时间
@@ -121,6 +126,7 @@ func (rc RongCloud) fillHeader(req *http.Request) string {
 	req.Header.Set("RC-Nonce", nonce)
 	req.Header.Set("RC-Signature", signature)
 	req.Header.Set("User-Agent", USERAGENT)
+	// TODO request id from ctx optional
 	req.Header.Set("RC-Request-Id", requestId)
 	return requestId
 }

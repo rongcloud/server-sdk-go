@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"syscall"
 )
 
@@ -57,12 +58,13 @@ func isNetError(err error) bool {
 
 // do http request
 func (rc *RongCloud) do(b *http.Request, data interface{}) (*http.Response, error) {
+	// TODO http response copy body closer
 	resp, err := rc.HttpClient.Do(b)
 	if err != nil {
 		if isNetError(err) {
 			rc.ChangeURI()
 		}
-		return nil, err
+		return resp, err
 	}
 	if resp.Body == nil {
 		return resp, nil
@@ -76,25 +78,42 @@ func (rc *RongCloud) do(b *http.Request, data interface{}) (*http.Response, erro
 	//}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		return nil, err
+		return resp, err
+	}
+	if !rc.Setting.DisableCodeCheck {
+		codeRes := &CodeResult{}
+		err = json.Unmarshal(body, &codeRes)
+		if err != nil {
+			// skip code result check failed
+			return resp, nil
+		}
+		if codeRes.Code != 200 && codeRes.Code != 10000 {
+			return resp, RCErrorNew(codeRes.Code, codeRes.ErrorMessage)
+		}
 	}
 	return resp, nil
 }
 
-type CodeGetter interface {
-	GetCode() int
-	GetErrMsg() string
+// CodeResult 融云返回状态码和错误码
+type CodeResult struct {
+	Code         int    `json:"code"`         // 返回码，200 为正常。
+	ErrorMessage string `json:"errorMessage"` // 错误信息
 }
 
-// v2 api error
-//func checkHTTPResponseCode(resp *http.Response, codeGetter CodeGetter) error {
-//	code := codeGetter.GetCode()
-//	msg := codeGetter.GetErrMsg()
-//	if code != 10000 && code != 200 {
-//		return fmt.Errorf(msg)
-//	}
-//	return nil
-//}
+// RCErrorNew 创建新的err信息
+func RCErrorNew(code int, text string) error {
+	return CodeResult{code, text}
+}
+
+// Error 获取错误信息
+func (e CodeResult) Error() string {
+	return strconv.Itoa(e.Code) + ": " + e.ErrorMessage
+}
+
+// ErrorCode 获取错误码
+func (e CodeResult) ErrorCode() int {
+	return e.Code
+}
 
 // 判断 http status code, 如果大于 500 就切换一次域名
 func (rc *RongCloud) changeURIIfNeed(resp *http.Response) {
@@ -138,7 +157,7 @@ func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader,
 	rc.fillHeader(req)
 	resp, err := rc.do(req, &res)
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
 	return resp, nil
 }
@@ -153,14 +172,18 @@ func (rc *RongCloud) postFormUrlencoded(ctx context.Context, path string, formPa
 	return rc.doRequest(ctx, path, body, &res)
 }
 
-type HttpResponseGetter interface {
+type httpResponseGetter interface {
 	GetHttpResponse() *http.Response
 }
 
-type RawHttpResponseGetter struct {
+type rawHttpResponseGetter struct {
 	rawHttpResponseInternal *http.Response
 }
 
-func (r *RawHttpResponseGetter) GetHttpResponse() *http.Response {
+func newRawHttpResponseGetter(rawHttpResponseInternal *http.Response) *rawHttpResponseGetter {
+	return &rawHttpResponseGetter{rawHttpResponseInternal: rawHttpResponseInternal}
+}
+
+func (r *rawHttpResponseGetter) GetHttpResponse() *http.Response {
 	return r.rawHttpResponseInternal
 }
