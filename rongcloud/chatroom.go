@@ -730,3 +730,47 @@ func (rc *RongCloud) ChatroomMessagePriorityQuery(ctx context.Context, req *Chat
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
 	return resp, err
 }
+
+type ChatroomKeepaliveAddRequest struct {
+	ChatroomId *string `json:"chatroomId"` // 聊天室 ID。
+}
+
+type ChatroomKeepaliveAddResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// ChatroomKeepaliveAdd 保活聊天室
+// More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/add-to-keep-alive
+func (rc *RongCloud) ChatroomKeepaliveAdd(ctx context.Context, req *ChatroomKeepaliveAddRequest) (*ChatroomKeepaliveAddResponse, error) {
+	params := url.Values{}
+	if req.ChatroomId != nil {
+		params.Set("chatroomId", StringValue(req.ChatroomId))
+	}
+	resp := &ChatroomKeepaliveAddResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, "/chatroom/keepalive/add.json", params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type ChatroomKeepaliveRemoveRequest struct {
+	ChatroomId *string `json:"chatroomId"` // 聊天室 ID。
+}
+
+type ChatroomKeepaliveRemoveResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// ChatroomKeepaliveRemove 取消保活聊天室
+// More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/remove-from-keep-alive
+func (rc *RongCloud) ChatroomKeepaliveRemove(ctx context.Context, req *ChatroomKeepaliveRemoveRequest) (*ChatroomKeepaliveRemoveResponse, error) {
+	params := url.Values{}
+	if req.ChatroomId != nil {
+		params.Set("chatroomId", StringValue(req.ChatroomId))
+	}
+	resp := &ChatroomKeepaliveRemoveResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, "/chatroom/keepalive/remove.json", params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}

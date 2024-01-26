@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"os"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMessagePrivatePublishRequest_MarshalJson(t *testing.T) {
@@ -48,6 +51,8 @@ func TestRongCloud_MessagePrivatePublish(t *testing.T) {
 	t.Logf("message private publish resp: %+v, raw http request %+v response: %+v", resp, httpResponse.Request, httpResponse)
 
 	// test HQVSMsg
+	customRequestId := uuid.New().String()
+	ctx = AddHttpRequestId(ctx, customRequestId)
 	hqResp, err := rc.MessagePrivatePublish(ctx, &MessagePrivatePublishRequest{
 		FromUserId: "u01",
 		ToUserId:   "u02",
@@ -63,5 +68,7 @@ func TestRongCloud_MessagePrivatePublish(t *testing.T) {
 		t.Fatalf("hqvc msg private publish non 200 code")
 	}
 	hqHttpResp := hqResp.GetHttpResponse()
+	httpRequestId := hqResp.GetRequestId()
 	t.Logf("msg private publish resp: %+v, raw http request: %+v, response: %+v", hqResp, hqHttpResp.Request, hqHttpResp)
+	assert.Equal(t, customRequestId, httpRequestId, "customRequestId should equal httpResponse requestId")
 }

@@ -135,11 +135,10 @@ func (rc *RongCloud) postJson(ctx context.Context, path string, postBody interfa
 	if err != nil {
 		return nil, err
 	}
-	return rc.doRequest(ctx, path, body, &res)
+	return rc.doRequest(ctx, path, body, &res, "application/json")
 }
 
-func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader, res interface{}) (*http.Response, error) {
-	// TODO http header params from ctx
+func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader, res interface{}, contentType string) (*http.Response, error) {
 	requestUrl := fmt.Sprintf("%s%s", rc.rongCloudURI, path)
 	var req *http.Request
 	var err error
@@ -153,9 +152,8 @@ func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader,
 		return nil, err
 	}
 
-	// TODO content-type header move out
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	rc.fillHeader(req)
+	req.Header.Set("Content-Type", contentType)
+	rc.fillHeader(ctx, req)
 	resp, err := rc.do(req, &res)
 	if err != nil {
 		return resp, err
@@ -170,11 +168,12 @@ func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader,
 func (rc *RongCloud) postFormUrlencoded(ctx context.Context, path string, formParams url.Values, res interface{}) (*http.Response, error) {
 	body := &bytes.Buffer{}
 	body.WriteString(formParams.Encode())
-	return rc.doRequest(ctx, path, body, &res)
+	return rc.doRequest(ctx, path, body, &res, "application/x-www-form-urlencoded")
 }
 
 type httpResponseGetter interface {
 	GetHttpResponse() *http.Response
+	GetRequestId() string
 }
 
 type rawHttpResponseGetter struct {
@@ -188,3 +187,29 @@ func newRawHttpResponseGetter(rawHttpResponseInternal *http.Response) *rawHttpRe
 func (r *rawHttpResponseGetter) GetHttpResponse() *http.Response {
 	return r.rawHttpResponseInternal
 }
+
+func (r *rawHttpResponseGetter) GetRequestId() string {
+	return r.rawHttpResponseInternal.Header.Get(RCRequestIdHeader)
+}
+
+type contextHttpHeaderKey string
+
+func (c contextHttpHeaderKey) String() string {
+	return RCHttpHeaderPrefix + string(c)
+}
+
+const (
+	RCHttpHeaderPrefix = "rc-http-header-" // http header context prefix for inhibiting context conflict
+	RCRequestIdHeader  = "X-Request-Id"
+)
+
+var (
+	// ContextRequestIdKey represent RongCloud http request id, passing to server api
+	ContextRequestIdKey = contextHttpHeaderKey(RCRequestIdHeader)
+)
+
+func AddHttpRequestId(ctx context.Context, requestId string) context.Context {
+	return context.WithValue(ctx, ContextRequestIdKey, requestId)
+}
+
+// TODO add other custom http header key to ctx

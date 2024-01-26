@@ -25,6 +25,7 @@ package rongcloud
 // 融云 Server API go 客户端 v4
 
 import (
+	"context"
 	"crypto/sha1"
 	"fmt"
 	"io"
@@ -118,17 +119,19 @@ func (rc *RongCloud) setContentTypeJson(req *http.Request) {
 }
 
 // fillHeader 在 Http Header 增加API签名
-func (rc RongCloud) fillHeader(req *http.Request) string {
-	requestId := uuid.New().String()
+func (rc RongCloud) fillHeader(ctx context.Context, req *http.Request) {
 	nonce, timestamp, signature := rc.getSignature()
 	req.Header.Set("RC-App-Key", rc.appKey)
 	req.Header.Set("RC-Timestamp", timestamp)
 	req.Header.Set("RC-Nonce", nonce)
 	req.Header.Set("RC-Signature", signature)
 	req.Header.Set("User-Agent", USERAGENT)
-	// TODO request id from ctx optional
-	req.Header.Set("RC-Request-Id", requestId)
-	return requestId
+	if customRequestId, ok := ctx.Value(ContextRequestIdKey).(string); ok {
+		req.Header.Set(RCRequestIdHeader, customRequestId)
+	} else {
+		requestId := uuid.New().String()
+		req.Header.Set(RCRequestIdHeader, requestId)
+	}
 }
 
 // NewRongCloud 创建 RongCloud 对象
