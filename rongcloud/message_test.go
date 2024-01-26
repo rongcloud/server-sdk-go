@@ -37,8 +37,8 @@ func TestRongCloud_MessagePrivatePublish(t *testing.T) {
 		Content: "hello world",
 	}
 	resp, err := rc.MessagePrivatePublish(ctx, &MessagePrivatePublishRequest{
-		FromUserId: String("u01"),
-		ToUserId:   String("u02"),
+		FromUserId: StringPtr("u01"),
+		ToUserId:   StringPtr("u02"),
 		RCMsg:      txtMsg,
 	})
 	if err != nil {
@@ -54,8 +54,8 @@ func TestRongCloud_MessagePrivatePublish(t *testing.T) {
 	customRequestId := uuid.New().String()
 	ctx = AddHttpRequestId(ctx, customRequestId)
 	hqResp, err := rc.MessagePrivatePublish(ctx, &MessagePrivatePublishRequest{
-		FromUserId: String("u01"),
-		ToUserId:   String("u02"),
+		FromUserId: StringPtr("u01"),
+		ToUserId:   StringPtr("u02"),
 		RCMsg: &HQVCMsg{
 			RemoteUrl: "1",
 			Duration:  2,

@@ -16,7 +16,7 @@ func TestRongCloud_ChatroomCreateNew(t *testing.T) {
 	rc := testNewRongCloud()
 	rc.Setting.DisableCodeCheck = true
 	resp, err := rc.ChatroomCreateNew(ctx, &ChatroomCreateNewRequest{
-		ChatroomId: String("grp1"),
+		ChatroomId: StringPtr("grp1"),
 	})
 	if err != nil {
 		t.Fatalf("chatroom create err %s", err)
@@ -26,9 +26,9 @@ func TestRongCloud_ChatroomCreateNew(t *testing.T) {
 	t.Logf("http response get %+v", resp.GetHttpResponse())
 
 	destroySetResp, err := rc.ChatroomDestroySet(ctx, &ChatroomDestroySetRequest{
-		ChatroomId:  String("grp1"),
-		DestroyTime: Int(60),
-		DestroyType: Int(1),
+		ChatroomId:  StringPtr("grp1"),
+		DestroyTime: IntPtr(60),
+		DestroyType: IntPtr(1),
 	})
 	if err != nil {
 		t.Fatalf("chatroom destroy set err %s", err)
@@ -36,7 +36,7 @@ func TestRongCloud_ChatroomCreateNew(t *testing.T) {
 	destroySetData, _ := json.Marshal(destroySetResp)
 	t.Logf("chatroom destroy set resp: %s", destroySetData)
 
-	chatroomGetResp, err := rc.ChatroomGet(ctx, &ChatroomGetRequest{ChatroomId: String("grp1")})
+	chatroomGetResp, err := rc.ChatroomGet(ctx, &ChatroomGetRequest{ChatroomId: StringPtr("grp1")})
 	if err != nil {
 		t.Fatalf("chatroom get err %s", err)
 	}
@@ -44,11 +44,11 @@ func TestRongCloud_ChatroomCreateNew(t *testing.T) {
 	t.Logf("chatroom get resp: %s", chatroomGetData)
 
 	chatroomEntrySetResp, err := rc.ChatroomEntrySet(ctx, &ChatroomEntrySetRequest{
-		ChatroomId: String("grp1"),
-		UserId:     String("user01"),
-		Key:        String("key1"),
-		Value:      String("val1"),
-		AutoDelete: Int(1),
+		ChatroomId: StringPtr("grp1"),
+		UserId:     StringPtr("user01"),
+		Key:        StringPtr("key1"),
+		Value:      StringPtr("val1"),
+		AutoDelete: IntPtr(1),
 		RCMsg: &ChrmKVNotiMsg{
 			Type:  1,
 			Key:   "key1",
@@ -62,9 +62,9 @@ func TestRongCloud_ChatroomCreateNew(t *testing.T) {
 	chatroomEntrySetData, _ := json.Marshal(chatroomEntrySetResp)
 	t.Logf("chatroom entry set resp: %s", chatroomEntrySetData)
 	entryBatchSetResp, err := rc.ChatroomEntryBatchSet(ctx, &ChatroomEntryBatchSetRequest{
-		ChatroomId:   String("grp1"),
-		AutoDelete:   Int(1),
-		EntryOwnerId: String("u01"),
+		ChatroomId:   StringPtr("grp1"),
+		AutoDelete:   IntPtr(1),
+		EntryOwnerId: StringPtr("u01"),
 		EntryInfo:    map[string]string{"k1": "k2"},
 	})
 	if err != nil {
@@ -99,9 +99,9 @@ func TestRongCloud_ChatroomUserQuery(t *testing.T) {
 	rc := testNewRongCloud()
 	ctx := context.TODO()
 	resp, err := rc.ChatroomUserQuery(ctx, &ChatroomUserQueryRequest{
-		ChatroomId: String("grp1"),
-		Count:      Int(200),
-		Order:      Int(1),
+		ChatroomId: StringPtr("grp1"),
+		Count:      IntPtr(200),
+		Order:      IntPtr(1),
 	})
 	if err != nil {
 		t.Fatalf("chatroom user query err %s", err)
@@ -114,7 +114,7 @@ func TestRongCloud_ChatroomUsersExist(t *testing.T) {
 	rc := testNewRongCloud()
 	ctx := context.TODO()
 	resp, err := rc.ChatroomUsersExist(ctx, &ChatroomUsersExistRequest{
-		ChatroomId: String("grp1"),
+		ChatroomId: StringPtr("grp1"),
 		UserIds:    []string{"u01", "u02"},
 	})
 	if err != nil {
@@ -129,10 +129,10 @@ func TestRongCloud_ChatroomUserBlockAdd(t *testing.T) {
 	ctx := context.TODO()
 	resp, err := rc.ChatroomUserBlockAdd(ctx, &ChatroomUserBlockAddRequest{
 		UserIds:    []string{"u01", "u02"},
-		ChatroomId: String("grp1"),
-		Minute:     Int(10),
-		Extra:      String(""),
-		NeedNotify: Bool(true),
+		ChatroomId: StringPtr("grp1"),
+		Minute:     IntPtr(10),
+		Extra:      StringPtr(""),
+		NeedNotify: BoolPtr(true),
 	})
 	if err != nil {
 		t.Fatalf("chatroom user block add err %s", err)
@@ -142,16 +142,16 @@ func TestRongCloud_ChatroomUserBlockAdd(t *testing.T) {
 
 	rollbackResp, err := rc.ChatroomUserBlockRollback(ctx, &ChatroomUserBlockRollbackRequest{
 		UserIds:    []string{"u01", "u02"},
-		ChatroomId: String("grp1"),
-		Extra:      String(""),
-		NeedNotify: Bool(true),
+		ChatroomId: StringPtr("grp1"),
+		Extra:      StringPtr(""),
+		NeedNotify: BoolPtr(true),
 	})
 	if err != nil {
 		t.Fatalf("chatroom user block rollback err %s", err)
 	}
 	rollbackData, _ := json.Marshal(rollbackResp)
 	t.Logf("rollback data: %s", rollbackData)
-	userBlockListResp, err := rc.ChatroomUserBlockList(ctx, &ChatroomUserBlockListRequest{ChatroomId: String("grp1")})
+	userBlockListResp, err := rc.ChatroomUserBlockList(ctx, &ChatroomUserBlockListRequest{ChatroomId: StringPtr("grp1")})
 	if err != nil {
 		t.Fatalf("chatroom user block list err: %s", err)
 	}
@@ -160,9 +160,9 @@ func TestRongCloud_ChatroomUserBlockAdd(t *testing.T) {
 
 	userBanAddResp, err := rc.ChatroomUserBanAdd(ctx, &ChatroomUserBanAddRequest{
 		UserIds:    []string{"u01", "u02"},
-		Minute:     Int(10),
-		Extra:      String(""),
-		NeedNotify: Bool(true),
+		Minute:     IntPtr(10),
+		Extra:      StringPtr(""),
+		NeedNotify: BoolPtr(true),
 	})
 	if err != nil {
 		t.Fatalf("user ban add err %s", err)
@@ -171,8 +171,8 @@ func TestRongCloud_ChatroomUserBlockAdd(t *testing.T) {
 	t.Logf("user ban add data: %s", userBanAddData)
 	userBanRemoveResp, err := rc.ChatroomUserBanRemove(ctx, &ChatroomUserBanRemoveRequest{
 		UserIds:    []string{"u01", "u02"},
-		Extra:      String(""),
-		NeedNotify: Bool(true),
+		Extra:      StringPtr(""),
+		NeedNotify: BoolPtr(true),
 	})
 	if err != nil {
 		t.Fatalf("user ban remove data: %s", err)
@@ -193,10 +193,10 @@ func TestRongCloud_ChatroomUserGagAdd(t *testing.T) {
 	ctx := context.TODO()
 	userGagAddResp, err := rc.ChatroomUserGagAdd(ctx, &ChatroomUserGagAddRequest{
 		UserIds:    []string{"u01", "u02"},
-		ChatroomId: String("grp1"),
-		Minute:     Int(10),
-		Extra:      String(""),
-		NeedNotify: Bool(true),
+		ChatroomId: StringPtr("grp1"),
+		Minute:     IntPtr(10),
+		Extra:      StringPtr(""),
+		NeedNotify: BoolPtr(true),
 	})
 	if err != nil {
 		t.Fatalf("chatroom user gag add err %s", err)
@@ -204,7 +204,7 @@ func TestRongCloud_ChatroomUserGagAdd(t *testing.T) {
 	userGagAddData, _ := json.Marshal(userGagAddResp)
 	t.Logf("chatroom user gag add data: %s", userGagAddData)
 	userGagListResp, err := rc.ChatroomUserGagList(ctx, &ChatroomUserGagListRequest{
-		ChatroomId: String("grp1"),
+		ChatroomId: StringPtr("grp1"),
 	})
 	if err != nil {
 		t.Fatalf("chatroom user gag list err %s", err)
@@ -213,9 +213,9 @@ func TestRongCloud_ChatroomUserGagAdd(t *testing.T) {
 	t.Logf("chatroom user gag list data: %s", userGagListData)
 	userGagRollbackResp, err := rc.ChatroomUserGagRollback(ctx, &ChatroomUserGagRollbackRequest{
 		UserIds:    []string{"u01", "u02"},
-		ChatroomId: String("grp1"),
-		Extra:      String(""),
-		NeedNotify: Bool(true),
+		ChatroomId: StringPtr("grp1"),
+		Extra:      StringPtr(""),
+		NeedNotify: BoolPtr(true),
 	})
 	if err != nil {
 		t.Fatalf("chatroom user gag rollback err %s", err)

@@ -1,6 +1,6 @@
 package rongcloud
 
-func String(s string) *string {
+func StringPtr(s string) *string {
 	return &s
 }
 
@@ -11,7 +11,7 @@ func StringValue(s *string) string {
 	return ""
 }
 
-func Int(i int) *int {
+func IntPtr(i int) *int {
 	return &i
 }
 
@@ -22,7 +22,7 @@ func IntValue(i *int) int {
 	return 0
 }
 
-func Bool(b bool) *bool {
+func BoolPtr(b bool) *bool {
 	return &b
 }
 
