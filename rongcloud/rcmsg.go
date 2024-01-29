@@ -18,9 +18,9 @@ type MsgUserInfo struct {
 
 // TXTMsg 消息
 type TXTMsg struct {
-	Content string      `json:"content"`
-	User    MsgUserInfo `json:"user"`
-	Extra   string      `json:"extra"`
+	Content string      `json:"content"` // [必传] 文字消息的文字内容，包括表情。
+	User    MsgUserInfo `json:"user"`    // 消息中携带的消息发送者的用户信息。一般情况下不建议在消息中携带用户信息。建议仅在直播场景下使用。
+	Extra   string      `json:"extra"`   // 扩展信息，可以放置任意的数据内容，也可以去掉此属性。
 }
 
 func (m *TXTMsg) ObjectName() string {
@@ -34,9 +34,9 @@ func (m *TXTMsg) ToString() (string, error) {
 
 // ImgMsg 消息
 type ImgMsg struct {
-	Content  string      `json:"content"`
-	User     MsgUserInfo `json:"user"`
-	ImageURI string      `json:"imageUri"`
+	Content  string      `json:"content"`  // [必传] 图片缩略图进行 Base64 编码的结果值。Base64 字符串长度建议为 5k，最大不超过 10k。注意在 Base64 进行 Encode 后需要将所有 \r\n 和 \r 和 \n 替换成空。
+	User     MsgUserInfo `json:"user"`     // 消息中携带的消息发送者的用户信息。一般情况下不建议在消息中携带用户信息。建议仅在直播场景下使用。
+	ImageURI string      `json:"imageUri"` // [必传] 图片上传到图片存储服务器后的地址。通过 IM Server API 发送图片消息时，需要自行上传文件到应用的文件服务器，生成图片地址后进行发送。
 	Extra    string      `json:"extra"`
 }
 

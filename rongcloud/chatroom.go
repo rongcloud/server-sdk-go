@@ -11,8 +11,8 @@ import (
 // chatroom 聊天室
 
 type ChatroomUserExistRequest struct {
-	ChatroomId *string `json:"chatroomId"`
-	UserId     *string `json:"userId"`
+	ChatroomId *string `json:"chatroomId"` // [必传] 要查询的聊天室 ID
+	UserId     *string `json:"userId"`     // [必传] 要查询的用户 ID
 }
 
 type ChatroomUserExistResponse struct {
@@ -22,7 +22,7 @@ type ChatroomUserExistResponse struct {
 	IsInChrm bool `json:"isInChrm"`
 }
 
-// ChatroomUserExist checking whether the member is in the chatroom.
+// ChatroomUserExist checking whether the member is in the chatroom. 查询是否在聊天室中
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/check-member
 func (rc *RongCloud) ChatroomUserExist(ctx context.Context, req *ChatroomUserExistRequest) (*ChatroomUserExistResponse, error) {
 	resp := &ChatroomUserExistResponse{}
@@ -137,7 +137,7 @@ func (rc *RongCloud) ChatroomDestroySet(ctx context.Context, req *ChatroomDestro
 }
 
 type ChatroomGetRequest struct {
-	ChatroomId *string `json:"chatroomId"` // 聊天室 ID
+	ChatroomId *string `json:"chatroomId"` // [必传] 聊天室 ID
 }
 
 type ChatroomGetResponse struct {
@@ -169,10 +169,10 @@ func (rc *RongCloud) ChatroomGet(ctx context.Context, req *ChatroomGetRequest) (
 }
 
 type ChatroomEntrySetRequest struct {
-	ChatroomId *string `json:"chatroomId"` // 聊天室 ID
-	UserId     *string `json:"userId"`     // 操作用户 ID。通过 Server API 非聊天室中用户可以进行设置。
-	Key        *string `json:"key"`        // 聊天室属性名称，Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，大小写敏感。最大长度 128 字符。每个聊天室中，最多允许设置 100 个属性 Key-Value 对。
-	Value      *string `json:"value"`      // 聊天室属性对应的值，最大长度 4096 个字符。
+	ChatroomId *string `json:"chatroomId"` // [必传] 聊天室 ID
+	UserId     *string `json:"userId"`     // [必传] 操作用户 ID。通过 Server API 非聊天室中用户可以进行设置。
+	Key        *string `json:"key"`        // [必传] 聊天室属性名称，Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，大小写敏感。最大长度 128 字符。每个聊天室中，最多允许设置 100 个属性 Key-Value 对。
+	Value      *string `json:"value"`      // [必传] 聊天室属性对应的值，最大长度 4096 个字符。
 	AutoDelete *int    `json:"autoDelete"` // 属性的操作用户退出聊天室后，是否删除此 Key 值。为 1 时删除此 Key 值和对应的 Value，为 0 时用户退出后不删除，默认为 0。
 	RCMsg      RCMsg   `json:"rcMsg"`      // 聊天室属性变化通知消息的消息类型，一般为内置消息类型 RC:chrmKVNotiMsg，也可以是其他自定义消息类型。如果传入该字段，则在聊天室属性变化时发送一条消息。
 }
@@ -182,7 +182,7 @@ type ChatroomEntrySetResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomEntrySet set chatroom entry kv
+// ChatroomEntrySet set chatroom entry kv (设置聊天室属性（KV）)
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/set-kv-entry
 func (rc *RongCloud) ChatroomEntrySet(ctx context.Context, req *ChatroomEntrySetRequest) (*ChatroomEntrySetResponse, error) {
 	params := url.Values{}
@@ -234,7 +234,7 @@ type ChatroomEntryBatchSetResponse struct {
 	CodeResult
 }
 
-// ChatroomEntryBatchSet batch set chatroom kv entry
+// ChatroomEntryBatchSet batch set chatroom kv entry  批量设置聊天室属性（KV）
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/set-kv-entry-batch
 func (rc *RongCloud) ChatroomEntryBatchSet(ctx context.Context, req *ChatroomEntryBatchSetRequest) (*ChatroomEntryBatchSetResponse, error) {
 	params := url.Values{}
@@ -272,7 +272,7 @@ type ChatroomDestroyResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomDestroy destroy chatroom
+// ChatroomDestroy destroy chatroom  销毁聊天室
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/destroy
 func (rc *RongCloud) ChatroomDestroy(ctx context.Context, req *ChatroomDestroyRequest) (*ChatroomDestroyResponse, error) {
 	params := url.Values{}
@@ -291,11 +291,11 @@ func (rc *RongCloud) ChatroomDestroy(ctx context.Context, req *ChatroomDestroyRe
 }
 
 type ChatroomUserQueryRequest struct {
-	ChatroomId *string `json:"chatroomId"` // 要查询的聊天室 ID
+	ChatroomId *string `json:"chatroomId"` // [必传] 要查询的聊天室 ID
 
-	Count *int `json:"count"` // 要获取的聊天室成员信息数，最多返回 500 个成员信息
+	Count *int `json:"count"` // [必传] 要获取的聊天室成员信息数，最多返回 500 个成员信息
 
-	Order *int `json:"order"` // 加入聊天室的先后顺序， 1 为加入时间正序， 2 为加入时间倒序
+	Order *int `json:"order"` // [必传]加入聊天室的先后顺序， 1 为加入时间正序， 2 为加入时间倒序
 }
 
 type ChatroomUserQueryResponse struct {
@@ -308,7 +308,7 @@ type ChatroomUserQueryResponse struct {
 	Time  string   `json:"time"`
 }
 
-// ChatroomUserQuery
+// ChatroomUserQuery 获取聊天室成员
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/query-member-list
 func (rc *RongCloud) ChatroomUserQuery(ctx context.Context, req *ChatroomUserQueryRequest) (*ChatroomUserQueryResponse, error) {
 	params := url.Values{}
@@ -331,8 +331,8 @@ func (rc *RongCloud) ChatroomUserQuery(ctx context.Context, req *ChatroomUserQue
 }
 
 type ChatroomUsersExistRequest struct {
-	ChatroomId *string  `json:"chatroomId"` // 要查询的聊天室 ID
-	UserIds    []string `json:"userIds"`    // 要查询的用户 ID，每次最多不超过 1000 个用户 ID
+	ChatroomId *string  `json:"chatroomId"` // [必传] 要查询的聊天室 ID
+	UserIds    []string `json:"userIds"`    // [必传] 要查询的用户 ID，每次最多不超过 1000 个用户 ID
 }
 
 type ChatroomUsersExistResponse struct {
@@ -348,7 +348,7 @@ type ChatroomUserExistResult struct {
 	IsInChrm int `json:"isInChrm"` // 用户是否在聊天室中，1 表示在聊天室中，0 表示不在聊天室中。
 }
 
-// ChatroomUsersExist
+// ChatroomUsersExist 批量查询是否在聊天室中
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/check-members
 func (rc *RongCloud) ChatroomUsersExist(ctx context.Context, req *ChatroomUsersExistRequest) (*ChatroomUsersExistResponse, error) {
 	params := url.Values{}
@@ -382,7 +382,7 @@ type ChatroomUserBlockAddResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomUserBlockAdd
+// ChatroomUserBlockAdd 封禁聊天室用户
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/block-user
 func (rc *RongCloud) ChatroomUserBlockAdd(ctx context.Context, req *ChatroomUserBlockAddRequest) (*ChatroomUserBlockAddResponse, error) {
 	params := url.Values{}
@@ -410,8 +410,8 @@ func (rc *RongCloud) ChatroomUserBlockAdd(ctx context.Context, req *ChatroomUser
 }
 
 type ChatroomUserBlockRollbackRequest struct {
-	UserIds    []string `json:"userIds"`    // 用户 ID，可同时移除多个用户，最多不超过 20 个。
-	ChatroomId *string  `json:"chatroomId"` // 聊天室 ID。
+	UserIds    []string `json:"userIds"`    // [必传] 用户 ID，可同时移除多个用户，最多不超过 20 个。
+	ChatroomId *string  `json:"chatroomId"` // [必传] 聊天室 ID。
 	Extra      *string  `json:"extra"`      // 通知携带的 JSON 格式的扩展信息，仅在 needNotify 为 true 时有效。
 	NeedNotify *bool    `json:"needNotify"` // 是否通知成员。默认 false 不通知。如果为 true，客户端会触发相应回调方法（要求 Android/iOS IMLib ≧ 5.4.5；Web IMLib ≧ 5.7.9）。通知范围：被解除封禁的成员。
 }
@@ -421,7 +421,7 @@ type ChatroomUserBlockRollbackResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomUserBlockRollback
+// ChatroomUserBlockRollback 解除封禁聊天室用户
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/unblock-user
 func (rc *RongCloud) ChatroomUserBlockRollback(ctx context.Context, req *ChatroomUserBlockRollbackRequest) (*ChatroomUserBlockRollbackResponse, error) {
 	params := url.Values{}
@@ -446,7 +446,7 @@ func (rc *RongCloud) ChatroomUserBlockRollback(ctx context.Context, req *Chatroo
 }
 
 type ChatroomUserBlockListRequest struct {
-	ChatroomId *string `json:"chatroomId"` // 聊天室 ID
+	ChatroomId *string `json:"chatroomId"` //  [必传]聊天室 ID
 }
 
 type ChatroomUserBlockListResponse struct {
@@ -460,7 +460,7 @@ type ChatroomUserBlockUser struct {
 	UserId string `json:"userId"` // 被封禁用户 ID。
 }
 
-// ChatroomUserBlockList
+// ChatroomUserBlockList 查询聊天室封禁用户
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/query-blocked-user
 func (rc *RongCloud) ChatroomUserBlockList(ctx context.Context, req *ChatroomUserBlockListRequest) (*ChatroomUserBlockListResponse, error) {
 	params := url.Values{}
@@ -474,8 +474,8 @@ func (rc *RongCloud) ChatroomUserBlockList(ctx context.Context, req *ChatroomUse
 }
 
 type ChatroomUserBanAddRequest struct {
-	UserIds    []string `json:"userIds"`    // 用户 ID，可同时禁言多个用户，每次最多不超过 20 个。
-	Minute     *int     `json:"minute"`     // 禁言时长，以分钟为单位，最大值为 43200 分钟。
+	UserIds    []string `json:"userIds"`    // [必传]用户 ID，可同时禁言多个用户，每次最多不超过 20 个。
+	Minute     *int     `json:"minute"`     // [必传]禁言时长，以分钟为单位，最大值为 43200 分钟。
 	Extra      *string  `json:"extra"`      // 通知携带的 JSON 格式的扩展信息，仅在 needNotify 为 true 时有效。
 	NeedNotify *bool    `json:"needNotify"` // 是否通知成员。默认 false 不通知。如果为 true，客户端会触发相应回调方法（要求 Android/iOS IMLib ≧ 5.4.5；Web IMLib ≧ 5.7.9）。通知范围：指定聊天室中所有成员。
 }
@@ -485,7 +485,7 @@ type ChatroomUserBanAddResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomUserBanAdd
+// ChatroomUserBanAdd 全局禁言用户
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/gag-user-globally
 func (rc *RongCloud) ChatroomUserBanAdd(ctx context.Context, req *ChatroomUserBanAddRequest) (*ChatroomUserBanAddResponse, error) {
 	params := url.Values{}
@@ -510,7 +510,7 @@ func (rc *RongCloud) ChatroomUserBanAdd(ctx context.Context, req *ChatroomUserBa
 }
 
 type ChatroomUserBanRemoveRequest struct {
-	UserIds []string `json:"userIds"` // 用户 ID，可同时移除多个用户，每次最多不超过 20 个。
+	UserIds []string `json:"userIds"` // [必传]用户 ID，可同时移除多个用户，每次最多不超过 20 个。
 
 	Extra *string `json:"extra"` // 通知携带的 JSON 格式的扩展信息，仅在 needNotify 为 true 时有效。
 
@@ -522,7 +522,8 @@ type ChatroomUserBanRemoveResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomUserBanRemove remove chatroom ban users
+// ChatroomUserBanRemove 取消全局禁言用户
+// More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/ungag-user-globally
 func (rc *RongCloud) ChatroomUserBanRemove(ctx context.Context, req *ChatroomUserBanRemoveRequest) (*ChatroomUserBanRemoveResponse, error) {
 	params := url.Values{}
 	if req.UserIds != nil {
@@ -552,7 +553,7 @@ type ChatroomUserBanQueryResponse struct {
 	Users              []ChatroomUserBlockUser `json:"users"`
 }
 
-// ChatroomUserBanQuery
+// ChatroomUserBanQuery 查询全局禁言用户列表
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/query-globally-gagged-user
 func (rc *RongCloud) ChatroomUserBanQuery(ctx context.Context, req *ChatroomUserBanQueryRequest) (*ChatroomUserBanQueryResponse, error) {
 	resp := &ChatroomUserBanQueryResponse{}
@@ -562,9 +563,9 @@ func (rc *RongCloud) ChatroomUserBanQuery(ctx context.Context, req *ChatroomUser
 }
 
 type ChatroomUserGagAddRequest struct {
-	UserIds    []string `json:"userIds"`    // 用户 ID，可同时禁言多个用户，最多不超过 20 个。
-	ChatroomId *string  `json:"chatroomId"` // 聊天室 ID。
-	Minute     *int     `json:"minute"`     // 禁言时长，以分钟为单位，最大值为 43200 分钟。
+	UserIds    []string `json:"userIds"`    // [必传]用户 ID，可同时禁言多个用户，最多不超过 20 个。
+	ChatroomId *string  `json:"chatroomId"` // [必传]聊天室 ID。
+	Minute     *int     `json:"minute"`     // [必传]禁言时长，以分钟为单位，最大值为 43200 分钟。
 	Extra      *string  `json:"extra"`      // 通知携带的 JSON 格式的扩展信息，仅在 needNotify 为 true 时有效。
 	NeedNotify *bool    `json:"needNotify"` // 是否通知成员。默认 false 不通知。如果为 true，客户端会触发相应回调方法（要求 Android/iOS IMLib ≧ 5.4.5；Web IMLib ≧ 5.7.9）。通知范围：指定聊天室中所有成员。
 }
@@ -574,7 +575,7 @@ type ChatroomUserGagAddResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomUserGagAdd gag chatroom user
+// ChatroomUserGagAdd 禁言指定聊天室用户
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/gag-user
 func (rc *RongCloud) ChatroomUserGagAdd(ctx context.Context, req *ChatroomUserGagAddRequest) (*ChatroomUserGagAddResponse, error) {
 	params := url.Values{}
@@ -602,9 +603,9 @@ func (rc *RongCloud) ChatroomUserGagAdd(ctx context.Context, req *ChatroomUserGa
 }
 
 type ChatroomUserGagRollbackRequest struct {
-	UserIds []string `json:"userIds"` // 用户 ID，可同时移除多个用户，最多不超过 20 个。
+	UserIds []string `json:"userIds"` // [必传]用户 ID，可同时移除多个用户，最多不超过 20 个。
 
-	ChatroomId *string `json:"chatroomId"` // 聊天室 ID。
+	ChatroomId *string `json:"chatroomId"` // [必传]聊天室 ID。
 
 	Extra *string `json:"extra"` // 通知携带的 JSON 格式的扩展信息，仅在 needNotify 为 true 时有效。
 
@@ -642,7 +643,7 @@ func (rc *RongCloud) ChatroomUserGagRollback(ctx context.Context, req *ChatroomU
 }
 
 type ChatroomUserGagListRequest struct {
-	ChatroomId *string `json:"chatroomId"` // 聊天室 ID。
+	ChatroomId *string `json:"chatroomId"` // [必传]聊天室 ID。
 }
 
 type ChatroomUserGagListResponse struct {
@@ -732,7 +733,7 @@ func (rc *RongCloud) ChatroomMessagePriorityQuery(ctx context.Context, req *Chat
 }
 
 type ChatroomKeepaliveAddRequest struct {
-	ChatroomId *string `json:"chatroomId"` // 聊天室 ID。
+	ChatroomId *string `json:"chatroomId"` // [必传]聊天室 ID。
 }
 
 type ChatroomKeepaliveAddResponse struct {
@@ -754,7 +755,7 @@ func (rc *RongCloud) ChatroomKeepaliveAdd(ctx context.Context, req *ChatroomKeep
 }
 
 type ChatroomKeepaliveRemoveRequest struct {
-	ChatroomId *string `json:"chatroomId"` // 聊天室 ID。
+	ChatroomId *string `json:"chatroomId"` // [必传]聊天室 ID。
 }
 
 type ChatroomKeepaliveRemoveResponse struct {
@@ -771,6 +772,49 @@ func (rc *RongCloud) ChatroomKeepaliveRemove(ctx context.Context, req *ChatroomK
 	}
 	resp := &ChatroomKeepaliveRemoveResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, "/chatroom/keepalive/remove.json", params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type ChatroomKeepaliveQueryRequest struct {
+	// 暂无请求参数(预留)
+}
+
+type ChatroomKeepaliveQueryResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+	ChatroomIds        []string `json:"chatroomIds,omitempty"` // 保活聊天室数组。
+}
+
+// ChatroomKeepaliveQuery 查询保活聊天室
+// More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/query-keep-alive
+func (rc *RongCloud) ChatroomKeepaliveQuery(ctx context.Context, req *ChatroomKeepaliveQueryRequest) (*ChatroomKeepaliveQueryResponse, error) {
+	resp := &ChatroomKeepaliveQueryResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, "/chatroom/keepalive/query.json", nil, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type ChatroomWhitelistAddRequest struct {
+	ObjectNames []string `json:"objectnames"` // [必传] 消息标识，最多不超过 20 个，自定义消息类型，长度不超过 32 个字符
+}
+
+type ChatroomWhitelistAddResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// ChatroomWhitelistAdd 加入聊天室消息白名单
+// More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/add-to-message-type-whitelist
+func (rc *RongCloud) ChatroomWhitelistAdd(ctx context.Context, req *ChatroomWhitelistAddRequest) (*ChatroomWhitelistAddResponse, error) {
+	params := url.Values{}
+	if req.ObjectNames != nil {
+		for _, name := range req.ObjectNames {
+			params.Add("objectnames", name) // no typo
+		}
+	}
+	resp := &ChatroomWhitelistAddResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, "/chatroom/whitelist/add.json", params, &resp)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
 	return resp, err
 }

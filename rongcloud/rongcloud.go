@@ -85,7 +85,7 @@ type RongCloud struct {
 }
 
 type Setting struct {
-	DisableCodeCheck bool
+	DisableCodeCheck bool // disable default check actions for http code and rongCloud code, details see examples/settings
 }
 
 // rongCloudExtra rongCloud扩展增加自定义融云服务器地址,请求超时时间

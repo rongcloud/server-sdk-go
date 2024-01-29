@@ -107,6 +107,8 @@ type MessagePrivatePublishResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
+// MessagePrivatePublish 发送单聊普通消息
+// More details see https://doc.rongcloud.cn/imserver/server/v1/message/send-private
 func (rc *RongCloud) MessagePrivatePublish(ctx context.Context, req *MessagePrivatePublishRequest) (*MessagePrivatePublishResponse, error) {
 	var resp *MessagePrivatePublishResponse
 	data, err := req.MakeFormData()
