@@ -1128,3 +1128,93 @@ func (rc *RongCloud) ChatroomBanCheck(ctx context.Context, req *ChatroomBanCheck
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
 	return resp, err
 }
+
+type ChatroomUserBanWhitelistRequest struct {
+	ChatroomId *string  `json:"chatroomId"` // [必传] 聊天室 ID
+	UserIds    []string `json:"userId"`     // [必传] 需要添加到白名单中的用户 ID，白名单中用户上限为 20 个，支持批量添加，单次添加上限不超过 20 个。
+	Extra      *string  `json:"extra"`      // 通知携带的 JSON 格式的扩展信息，仅在 NeedNotify 为 true 时有效。
+	NeedNotify *bool    `json:"needNotify"` // 是否通知成员。默认 false 不通知。如果为 true，客户端会触发相应回调方法（要求 Android/iOS IMLib ≧ 5.4.5；Web IMLib ≧ 5.7.9）。通知范围：指定聊天室中所有成员
+}
+
+func (req *ChatroomUserBanWhitelistRequest) toUrlValues() url.Values {
+	params := url.Values{}
+	if req.ChatroomId != nil {
+		params.Set("chatroomId", StringValue(req.ChatroomId))
+	}
+	if req.UserIds != nil {
+		for _, id := range req.UserIds {
+			params.Add("userId", id)
+		}
+	}
+	if req.Extra != nil {
+		params.Set("extra", StringValue(req.Extra))
+	}
+	if req.NeedNotify != nil {
+		params.Set("needNotify", strconv.FormatBool(BoolValue(req.NeedNotify)))
+	}
+	return params
+}
+
+type ChatroomUserBanWhitelistAddRequest struct {
+	ChatroomUserBanWhitelistRequest `json:",inline"`
+}
+
+type ChatroomUserBanWhiteListAddResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// ChatroomUserBanWhitelistAdd 加入聊天室全体禁言白名单
+// More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/add-to-chatroom-ban-whitelist
+func (rc *RongCloud) ChatroomUserBanWhitelistAdd(ctx context.Context, req *ChatroomUserBanWhitelistAddRequest) (*ChatroomUserBanWhiteListAddResponse, error) {
+	path := "/chatroom/user/ban/whitelist/add.json"
+	params := req.toUrlValues()
+	resp := &ChatroomUserBanWhiteListAddResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type ChatroomUserBanWhitelistRollbackRequest struct {
+	ChatroomUserBanWhitelistRequest `json:",inline"`
+}
+
+type ChatroomUserBanWhiteListRollbackResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// ChatroomUserBanWhitelistRollback 移出聊天室全体禁言白名单
+// More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/remove-from-chatroom-ban-whitelist
+func (rc *RongCloud) ChatroomUserBanWhitelistRollback(ctx context.Context, req *ChatroomUserBanWhitelistRollbackRequest) (*ChatroomUserBanWhiteListRollbackResponse, error) {
+	path := "/chatroom/user/ban/whitelist/rollback.json"
+	params := req.toUrlValues()
+	resp := &ChatroomUserBanWhiteListRollbackResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type ChatroomUserBanWhitelistQueryRequest struct {
+	ChatroomId *string `json:"chatroomId"` // [必传] 聊天室 ID
+}
+
+type ChatroomUserBanWhitelistQueryResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+	UserIds            []string `json:"userIds"` // 聊天室中白名单用户数组。
+}
+
+// ChatroomUserBanWhitelistQuery 查询聊天室全体禁言白名单
+// More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/query-chatroom-ban-whitelist
+func (rc *RongCloud) ChatroomUserBanWhitelistQuery(ctx context.Context, req *ChatroomUserBanWhitelistQueryRequest) (*ChatroomUserBanWhitelistQueryResponse, error) {
+	path := "/chatroom/user/ban/whitelist/query.json"
+	params := url.Values{}
+	if req.ChatroomId != nil {
+		params.Set("chatroomId", StringValue(req.ChatroomId))
+	}
+	resp := &ChatroomUserBanWhitelistQueryResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
