@@ -51,39 +51,6 @@ func chatroomMetaOp(ctx context.Context, rc *rongcloud.RongCloud) {
 	chatroomGetData, _ := json.Marshal(chatroomGetResp)
 	log.Printf("chatroom get resp: %s", chatroomGetData)
 
-	// 设置聊天室属性（KV）
-	chatroomEntrySetResp, err := rc.ChatroomEntrySet(ctx, &rongcloud.ChatroomEntrySetRequest{
-		ChatroomId: rongcloud.StringPtr("grp1"),
-		UserId:     rongcloud.StringPtr("user01"),
-		Key:        rongcloud.StringPtr("key1"),
-		Value:      rongcloud.StringPtr("val1"),
-		AutoDelete: rongcloud.IntPtr(1),
-		RCMsg: &rongcloud.ChrmKVNotiMsg{
-			Type:  1,
-			Key:   "key1",
-			Value: "val1",
-			Extra: "extra info",
-		},
-	})
-	if err != nil {
-		log.Fatalf("chatroom entry set err %s", err)
-	}
-	chatroomEntrySetData, _ := json.Marshal(chatroomEntrySetResp)
-	log.Printf("chatroom entry set resp: %s", chatroomEntrySetData)
-
-	// 批量设置聊天室属性（KV）
-	entryBatchSetResp, err := rc.ChatroomEntryBatchSet(ctx, &rongcloud.ChatroomEntryBatchSetRequest{
-		ChatroomId:   rongcloud.StringPtr("grp1"),
-		AutoDelete:   rongcloud.IntPtr(1),
-		EntryOwnerId: rongcloud.StringPtr("u01"),
-		EntryInfo:    map[string]string{"k1": "k2"},
-	})
-	if err != nil {
-		log.Fatalf("chatroom entry batch set err %s", err)
-	}
-	entryBatchSetData, _ := json.Marshal(entryBatchSetResp)
-	log.Printf("chat room entry batch set resp: %s", entryBatchSetData)
-
 	// destroy chatroom 销毁聊天室
 	destroyChatroomResp, err := rc.ChatroomDestroy(ctx, &rongcloud.ChatroomDestroyRequest{
 		ChatroomIds: []string{"grp1", "grp2"},
