@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"syscall"
 )
 
@@ -107,7 +106,7 @@ func RCErrorNew(code int, text string) error {
 
 // Error 获取错误信息
 func (e CodeResult) Error() string {
-	return strconv.Itoa(e.Code) + ": " + e.ErrorMessage
+	return fmt.Sprintf("code:%d, errorMessage:%s", e.Code, e.ErrorMessage)
 }
 
 // ErrorCode 获取错误码

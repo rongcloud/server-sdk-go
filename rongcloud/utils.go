@@ -22,6 +22,17 @@ func IntValue(i *int) int {
 	return 0
 }
 
+func Int64Ptr(i int64) *int64 {
+	return &i
+}
+
+func Int64Value(i *int64) int64 {
+	if i != nil {
+		return *i
+	}
+	return 0
+}
+
 func BoolPtr(b bool) *bool {
 	return &b
 }

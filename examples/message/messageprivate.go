@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"net/url"
 	"os"
 
 	"github.com/google/uuid"
@@ -50,7 +51,6 @@ func messagePrivate(ctx context.Context, rc *rongcloud.RongCloud) {
 	// 更多信息请参考 https://doc.rongcloud.cn/imserver/server/v1/message/objectname#%E5%9B%BE%E7%89%87%E6%B6%88%E6%81%AF
 	imgMsg := &rongcloud.ImgMsg{
 		Content:  "/9j/4AAQSkZJRgABAgAAZABkAAD",
-		User:     rongcloud.MsgUserInfo{},
 		ImageURI: "http://p1.cdn.com/fds78ruhi.jpg",
 		Extra:    "",
 	}
@@ -93,4 +93,8 @@ func (m *CustomJsonMsg) ObjectName() string {
 func (m *CustomJsonMsg) ToString() (string, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
+}
+
+func (m *CustomJsonMsg) EncodeValues(key string, v *url.Values) error {
+	return rongcloud.MakeRCMsgUrlValues(m, key, v)
 }
