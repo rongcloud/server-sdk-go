@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"os"
 
@@ -13,12 +12,13 @@ func main() {
 	ctx := context.Background()
 	rc := rongcloud.NewRongCloud(os.Getenv("APP_KEY"), os.Getenv("APP_SECRET"))
 
+	testMsgUID := "CDCV-7C6J-P604-3F9O"
 	// 设置单群聊消息扩展
 	extraKeyVal := map[string]string{
-		"type": "3",
+		"key1": "val1",
 	}
 	_, err := rc.MessageExpansionSet(ctx, &rongcloud.MessageExpansionSetRequest{
-		MsgUID:           rongcloud.StringPtr("CDD5-3GVM-OL04-3F9N"),
+		MsgUID:           rongcloud.StringPtr(testMsgUID),
 		UserId:           rongcloud.StringPtr("u01"),
 		ConversationType: rongcloud.StringPtr(rongcloud.ConversationTypePrivate),
 		TargetId:         rongcloud.StringPtr("u02"),
@@ -26,26 +26,25 @@ func main() {
 		IsSyncSender:     rongcloud.IntPtr(1),
 	})
 	if err != nil {
-		//log.Fatalf("message expansion set error %s", err)
+		log.Fatalf("message expansion set error %s", err)
 	}
 	log.Printf("message expansion set success")
 
 	// 获取单群聊消息扩展
 	expansionResp, err := rc.MessageExpansionQuery(ctx, &rongcloud.MessageExpansionQueryRequest{
-		MsgUID: rongcloud.StringPtr("CDD5-3GVM-OL04-3F9N"),
+		MsgUID: rongcloud.StringPtr(testMsgUID),
 		PageNo: rongcloud.IntPtr(1),
 	})
 	if err != nil {
 		log.Fatalf("message expansion query error %s", err)
 	}
-	expansionRespData, _ := json.Marshal(expansionResp)
-	if err != nil {
-		log.Fatalf("message expansion query resp data %s", expansionRespData)
+	for k, value := range expansionResp.ExtraContent {
+		log.Printf("expansion query key: %s, value: %+v", k, value)
 	}
 
 	// 删除单群聊消息扩展
 	_, err = rc.MessageExpansionDelete(ctx, &rongcloud.MessageExpansionDeleteRequest{
-		MsgUID:           rongcloud.StringPtr("CDD5-3GVM-OL04-3F9N"),
+		MsgUID:           rongcloud.StringPtr(testMsgUID),
 		UserId:           rongcloud.StringPtr("u01"),
 		ConversationType: rongcloud.StringPtr(rongcloud.ConversationTypePrivate),
 		TargetId:         rongcloud.StringPtr("u02"),

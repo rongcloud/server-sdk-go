@@ -227,7 +227,7 @@ type MessageExpansionQueryResponse struct {
 
 type MessageExpansionQueryExtraContentValue struct {
 	Value     string `json:"v"`  // value
-	Timestamp int64  `json:"ts"` // 时间戳
+	Timestamp int64  `json:"ts"` // 版本号
 }
 
 // MessageExpansionQuery 获取单群聊消息扩展
@@ -282,7 +282,7 @@ type MessageUltraGroupPublishRequest struct {
 	// 仅在 expansion 为 true 时有效。
 	//自定义的消息扩展信息，该字段接受 JSON 字符串格式的键值对（key-value pairs）。请注意区别于消息体内的 extra 字段，extraContent 的值在消息发送后可修改，修改方式请参见服务端 API 接口文档消息扩展，或参考各客户端「消息扩展」接口文档。
 	//KV 详细要求：以 Key、Value 的方式进行设置，如：{"type":"3"}。Key 最大 32 个字符，支持大小写英文字母、数字、 特殊字符+ = - _ 的组合方式，不支持汉字。Value 最大 4096 个字符。单次可设置最多 100 对 KV 扩展信息，单条消息最多可设置 300 对 KV 扩展信息。
-	ExtraContent map[string]string `json:"extraContent,omitempty" `
+	ExtraContent *string `json:"extraContent,omitempty" `
 }
 
 type MessageUltraGroupPublishResponse struct {

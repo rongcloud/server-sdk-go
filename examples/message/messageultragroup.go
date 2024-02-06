@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"os"
 
@@ -20,6 +21,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("txt msg marshal content error %s", err)
 	}
+	extraContent := map[string]string{
+		"key1": "key2",
+	}
+	extraContentStr, err := json.Marshal(extraContent)
+	if err != nil {
+		log.Fatalf("json.Marshal extraContent error %s", err)
+	}
 	_, err = rc.MessageUltraGroupPublish(ctx, &rongcloud.MessageUltraGroupPublishRequest{
 		FromUserId:       rongcloud.StringPtr("u01"),
 		ToGroupIds:       []string{"ug01"},
@@ -32,9 +40,9 @@ func main() {
 		IsMentioned:      nil,
 		ContentAvailable: nil,
 		PushExt:          nil,
-		BusChannel:       nil,
-		Expansion:        nil,
-		ExtraContent:     nil,
+		BusChannel:       rongcloud.StringPtr("channel01"),
+		Expansion:        rongcloud.BoolPtr(true),
+		ExtraContent:     rongcloud.StringPtr(string(extraContentStr)),
 	})
 	if err != nil {
 		log.Fatalf("message ultra group publish error %s", err)
