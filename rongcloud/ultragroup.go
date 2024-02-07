@@ -362,6 +362,37 @@ func (rc *RongCloud) UltraGroupChannelPrivateUsersGet(ctx context.Context, req *
 	return resp, err
 }
 
+type UltraGroupUserChannelQueryRequest struct {
+	// [必传] 超级群 ID。
+	GroupId *string `url:"groupId,omitempty"`
+	// [必传] 用户ID。
+	UserId *string `url:"userId,omitempty"`
+	// 查询页码，默认 1。
+	Page *int `url:"page,omitempty"`
+	// 每页条数，默认 10，最多为 50。
+	PageSize *int `url:"pageSize,omitempty"`
+}
+
+type UltraGroupUserChannelQueryResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+	Data               []string `json:"data"` // 超级群频道 ID 列表。
+}
+
+// UltraGroupUserChannelQuery 查询用户所属的私有频道
+// More details see https://doc.rongcloud.cn/imserver/server/v1/ultragroup/query-channel-by-user
+func (rc *RongCloud) UltraGroupUserChannelQuery(ctx context.Context, req *UltraGroupUserChannelQueryRequest) (*UltraGroupUserChannelQueryResponse, error) {
+	path := "/ultragroup/user/channel/query.json"
+	params, err := makeUrlValues(req)
+	if err != nil {
+		return nil, err
+	}
+	resp := &UltraGroupUserChannelQueryResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
 type UltraGroupChannelPrivateUsersAddRequest struct {
 	// [必传] 超级群 ID
 	GroupId *string `url:"groupId,omitempty"`
@@ -1071,6 +1102,124 @@ func (rc *RongCloud) UltraGroupUserUserGroupQuery(ctx context.Context, req *Ultr
 		return nil, err
 	}
 	resp := &UltraGroupUserUserGroupQueryResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type UltraGroupChannelUserGroupBindRequest struct {
+	// [必传] 超级群 ID
+	GroupId *string `url:"groupId,omitempty"`
+	// [必传] 频道 ID
+	BusChannel *string `url:"busChannel,omitempty"`
+	// [必传] 用户组 ID 列表，多个 ID 以逗号分隔。单次请求不能超过 10 个，否则全部失败。
+	UserGroupIds *string `url:"userGroupIds,omitempty"`
+}
+
+type UltraGroupChannelUserGroupBindResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// UltraGroupChannelUserGroupBind 超级群绑定频道与用户组
+// More details see https://doc.rongcloud.cn/imserver/server/v1/ultragroup/bind-channel-to-usergroup
+func (rc *RongCloud) UltraGroupChannelUserGroupBind(ctx context.Context, req *UltraGroupChannelUserGroupBindRequest) (*UltraGroupChannelUserGroupBindResponse, error) {
+	path := "/ultragroup/channel/usergroup/bind.json"
+	params, err := makeUrlValues(req)
+	if err != nil {
+		return nil, err
+	}
+	resp := &UltraGroupChannelUserGroupBindResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type UltraGroupChannelUserGroupUnbindRequest struct {
+	// [必传] 超级群 ID
+	GroupId *string `url:"groupId,omitempty"`
+	// [必传] 频道 ID
+	BusChannel *string `url:"busChannel,omitempty"`
+	// [必传] 用户组 ID 列表，多个 ID 以逗号分隔。单次请求不能超过 10 个，否则全部失败。
+	UserGroupIds *string `url:"userGroupIds,omitempty"`
+}
+
+type UltraGroupChannelUserGroupUnbindResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// UltraGroupChannelUserGroupUnbind 超级群解绑频道与用户组
+// More details see https://doc.rongcloud.cn/imserver/server/v1/ultragroup/unbind-channel-from-usergroup
+func (rc *RongCloud) UltraGroupChannelUserGroupUnbind(ctx context.Context, req *UltraGroupChannelUserGroupUnbindRequest) (*UltraGroupChannelUserGroupUnbindResponse, error) {
+	path := "/ultragroup/channel/usergroup/unbind.json"
+	params, err := makeUrlValues(req)
+	if err != nil {
+		return nil, err
+	}
+	resp := &UltraGroupChannelUserGroupUnbindResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type UltraGroupChannelUserGroupQueryRequest struct {
+	// [必传] 超级群 ID
+	GroupId *string `url:"groupId,omitempty"`
+	// [必传] 频道ID
+	BusChannel *string `url:"busChannel,omitempty"`
+	// 查询页码，默认1
+	Page *int `url:"page,omitempty"`
+	// 每页条数，默认10，最多为50
+	PageSize *int `url:"pageSize,omitempty"`
+}
+
+type UltraGroupChannelUserGroupQueryResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+	Data               []string `json:"data"` // 用户组 ID 列表。
+}
+
+// UltraGroupChannelUserGroupQuery 超级群查询频道绑定的用户组
+// More details see https://doc.rongcloud.cn/imserver/server/v1/ultragroup/query-channel-bound-usergroup
+func (rc *RongCloud) UltraGroupChannelUserGroupQuery(ctx context.Context, req *UltraGroupChannelUserGroupQueryRequest) (*UltraGroupChannelUserGroupQueryResponse, error) {
+	path := "/ultragroup/channel/usergroup/query.json"
+	params, err := makeUrlValues(req)
+	if err != nil {
+		return nil, err
+	}
+	resp := &UltraGroupChannelUserGroupQueryResponse{}
+	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type UltraGroupUserGroupChannelQueryRequest struct {
+	// [必传] 超级群 ID。
+	GroupId *string `url:"groupId,omitempty"`
+	// [必传] 用户组 ID。
+	UserGroupId *string `url:"userGroupId,omitempty"`
+	// 查询页码，默认1。
+	Page *int `url:"page,omitempty"`
+	// 每页条数，默认 10，最多为 50。
+	PageSize *int `url:"pageSize,omitempty"`
+}
+
+type UltraGroupUserGroupChannelQueryResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+	Data               []string `json:"data"` // 频道ID列表
+}
+
+// UltraGroupUserGroupChannelQuery 超级群查询用户组绑定的频道
+// More details see https://doc.rongcloud.cn/imserver/server/v1/ultragroup/query-usergroup-bound-channel
+func (rc *RongCloud) UltraGroupUserGroupChannelQuery(ctx context.Context, req *UltraGroupUserGroupChannelQueryRequest) (*UltraGroupUserGroupChannelQueryResponse, error) {
+	path := "/ultragroup/usergroup/channel/query.json"
+	params, err := makeUrlValues(req)
+	if err != nil {
+		return nil, err
+	}
+	resp := &UltraGroupUserGroupChannelQueryResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
 	return resp, err
