@@ -161,13 +161,23 @@ func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader,
 }
 
 // postFormUrlencoded
-// @param ctx context with
-// @param path url path, e.g. /a/b/c
-// @param formParams x-www-form-urlencoded body
 func (rc *RongCloud) postFormUrlencoded(ctx context.Context, path string, formParams url.Values, res interface{}) (*http.Response, error) {
 	body := &bytes.Buffer{}
 	body.WriteString(formParams.Encode())
 	return rc.doRequest(ctx, path, body, &res, "application/x-www-form-urlencoded")
+}
+
+// postForm post form with x-www-form-urlencoded format
+// @param ctx context
+// @param path url path e.g.  /a/b/c
+// @param req url request struct
+// @param res response struct
+func (rc *RongCloud) postForm(ctx context.Context, path string, req, res interface{}) (*http.Response, error) {
+	params, err := makeUrlValues(req)
+	if err != nil {
+		return nil, err
+	}
+	return rc.postFormUrlencoded(ctx, path, params, res)
 }
 
 type httpResponseGetter interface {

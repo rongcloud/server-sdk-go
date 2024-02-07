@@ -13,7 +13,7 @@ func NewSDKError(msg string) error {
 	return SDKError{Msg: msg}
 }
 func (e SDKError) Error() string {
-	return fmt.Sprintf("", e.Msg)
+	return e.Msg
 }
 
 // NewEncodeRequestError
