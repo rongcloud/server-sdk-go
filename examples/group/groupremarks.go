@@ -15,7 +15,7 @@ func main() {
 
 	// 创建群组
 	_, err := rc.GroupCreate(ctx, &rongcloud.GroupCreateRequest{
-		UserId:    rongcloud.StringPtr("u01"),
+		UserId:    []string{"u01", "u02"},
 		GroupId:   rongcloud.StringPtr("grp01"),
 		GroupName: rongcloud.StringPtr("grp01"),
 	})
