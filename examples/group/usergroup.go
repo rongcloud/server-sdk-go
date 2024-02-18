@@ -42,6 +42,7 @@ func main() {
 		log.Fatalf("group sync error %s", err)
 	}
 
+	// 刷新群组信息
 	_, err = rc.GroupRefresh(ctx, &rongcloud.GroupRefreshRequest{
 		GroupId:   rongcloud.StringPtr("grp01"),
 		GroupName: rongcloud.StringPtr("grp01"),

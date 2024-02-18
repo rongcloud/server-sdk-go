@@ -253,3 +253,227 @@ func (rc *RongCloud) GroupRefresh(ctx context.Context, req *GroupRefreshRequest)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
 	return resp, err
 }
+
+type GroupJoinRequest struct {
+	// [必传] 要加入群的用户 ID，可提交多个。最多不超过 1000 个。
+	UserIds []string `url:"userId,omitempty"`
+	// [必传] 要加入的群的群组 ID。
+	GroupId *string `url:"groupId,omitempty"`
+	// 要加入的群的名称。
+	// 注意：加入群组时，如果传入 groupName，则会修改推送通知中携带的群组名称，效果与调用刷新群组信息一致。
+	GroupName *string `url:"groupName,omitempty"`
+}
+
+type GroupJoinResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// GroupJoin 加入群组
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/join-group
+func (rc *RongCloud) GroupJoin(ctx context.Context, req *GroupJoinRequest) (*GroupJoinResponse, error) {
+	path := "/group/join.json"
+	resp := &GroupJoinResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupUserQueryRequest struct {
+	GroupId *string `url:"groupId,omitempty"`
+}
+
+type GroupUserQueryResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+	Users              []*GroupUser `json:"users"` // 群成员数组。
+}
+
+type GroupUser struct {
+	Id string `json:"id"` // 群成员的用户 ID。
+}
+
+// GroupUserQuery 查询群组成员
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/query-group-member
+func (rc *RongCloud) GroupUserQuery(ctx context.Context, req *GroupUserQueryRequest) (*GroupUserQueryResponse, error) {
+	path := "/group/user/query.json"
+	resp := &GroupUserQueryResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupQuitRequest struct {
+	// [必传] 要退出群的用户 ID，可提交多个，最多不超过 1000 个。
+	UserId []string `url:"userId,omitempty"`
+	// [必传] 要退出的群的群组 ID。
+	GroupId *string `url:"groupId,omitempty"`
+}
+
+type GroupQuitResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// GroupQuit 退出群组
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/quit-group
+func (rc *RongCloud) GroupQuit(ctx context.Context, req *GroupQuitRequest) (*GroupQuitResponse, error) {
+	path := "/group/quit.json"
+	resp := &GroupQuitResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupDismissRequest struct {
+	// [必传] 操作解散群的用户 ID，可以为任何用户 ID ，非群组创建者也可以解散群组。
+	UserId *string `url:"userId,omitempty"`
+	// [必传] 要解散的群的群组 ID。
+	GroupId *string `url:"groupId,omitempty"`
+}
+
+type GroupDismissResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// GroupDismiss 解散群组
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/dismiss-group
+func (rc *RongCloud) GroupDismiss(ctx context.Context, req *GroupDismissRequest) (*GroupDismissResponse, error) {
+	path := "/group/dismiss.json"
+	resp := &GroupDismissResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupBanAddRequest struct {
+	// [必传] 群组 ID，支持一次设置多个，最多不超过 20 个。
+	GroupIds []string `url:"groupId,omitempty"`
+}
+
+type GroupBanAddResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// GroupBanAdd 设置群组全体禁言
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/ban-group
+func (rc *RongCloud) GroupBanAdd(ctx context.Context, req *GroupBanAddRequest) (*GroupBanAddResponse, error) {
+	path := "/group/ban/add.json"
+	resp := &GroupBanAddResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupBanRollbackRequest struct {
+	// [必传] 群组 ID，支持一次设置多个，最多不超过 20 个。
+	GroupIds []string `url:"groupId,omitempty"`
+}
+
+type GroupBanRollbackResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// GroupBanRollback 取消群组全体禁言
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/unban-group
+func (rc *RongCloud) GroupBanRollback(ctx context.Context, req *GroupBanRollbackRequest) (*GroupBanRollbackResponse, error) {
+	path := "/group/ban/rollback.json"
+	resp := &GroupBanRollbackResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupBanQueryRequest struct {
+	// 群组 ID。单次可查询指定单个或多个群组，单次查询最多不超过 20 个群组。不传时，表示查询所有设置禁言的群组列表。
+	GroupIds []string `url:"groupId,omitempty"`
+}
+
+type GroupBanQueryResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+	GroupInfo          []GroupBanQueryGroupInfo `json:"groupinfo"` // 禁言群组信息数据。
+}
+
+type GroupBanQueryGroupInfo struct {
+	GroupId string `json:"groupId"` // 群组 ID。
+	Stat    int    `json:"stat"`    // 禁言状态，0 表示为未禁言、1 表示为禁言。
+}
+
+// GroupBanQuery 查询群组全体禁言
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/query-banned-state-or-list
+func (rc *RongCloud) GroupBanQuery(ctx context.Context, req *GroupBanQueryRequest) (*GroupBanQueryResponse, error) {
+	path := "/group/ban/query.json"
+	resp := &GroupBanQueryResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupUserBanWhitelistAddRequest struct {
+	// [必传] 用户 ID，支持一次添加多个用户，最多不超过 20 个。
+	UserIds []string `url:"userId,omitempty"`
+	// [必传] 群组 ID。
+	GroupId *string `url:"groupId,omitempty"`
+}
+
+type GroupUserBanWhitelistAddResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// GroupUserBanWhitelistAdd 加入群组全体禁言白名单
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/add-to-group-ban-whitelist
+func (rc *RongCloud) GroupUserBanWhitelistAdd(ctx context.Context, req *GroupUserBanWhitelistAddRequest) (*GroupUserBanWhitelistAddResponse, error) {
+	path := "/group/user/ban/whitelist/add.json"
+	resp := &GroupUserBanWhitelistAddResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupUserBanWhitelistRollbackRequest struct {
+	// [必传] 用户 ID，支持一次添加多个用户，最多不超过 20 个。
+	UserIds []string `url:"userId,omitempty"`
+	// [必传] 群组 ID。
+	GroupId *string `url:"groupId,omitempty"`
+}
+
+type GroupUserBanWhitelistRollbackResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// GroupUserBanWhitelistRollback 移出群组全体禁言白名单
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/remove-from-group-ban-whitelist
+func (rc *RongCloud) GroupUserBanWhitelistRollback(ctx context.Context, req *GroupUserBanWhitelistRollbackRequest) (*GroupUserBanWhitelistRollbackResponse, error) {
+	path := "/group/user/ban/whitelist/rollback.json"
+	resp := &GroupUserBanWhitelistRollbackResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type GroupUserBanWhitelistQueryRequest struct {
+	// [必传] 群组 ID。
+	GroupId *string `url:"groupId,omitempty"`
+}
+
+type GroupUserBanWhitelistQueryResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+	UserIds            []string `json:"userIds"`
+}
+
+// GroupUserBanWhitelistQuery 查询群组全体禁言白名单
+// More details see https://doc.rongcloud.cn/imserver/server/v1/group/query-group-ban-whitelist
+func (rc *RongCloud) GroupUserBanWhitelistQuery(ctx context.Context, req *GroupUserBanWhitelistQueryRequest) (*GroupUserBanWhitelistQueryResponse, error) {
+	path := "/group/user/ban/whitelist/query.json"
+	resp := &GroupUserBanWhitelistQueryResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
