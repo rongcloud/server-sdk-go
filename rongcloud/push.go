@@ -190,7 +190,7 @@ type PushUserNotificationIOS struct {
 type PushUserResponse struct {
 	CodeResult
 	httpResponseGetter `json:"-"`
-	Id                 string `json:"id"` // 推送唯一标识。
+	Id                 string `json:"id"`
 }
 
 // PushUser 发送指定用户不落地通知
@@ -314,7 +314,7 @@ type PushNotificationAndroid struct {
 type PushResponse struct {
 	CodeResult
 	httpResponseGetter `json:"-"`
-	Id                 string `json:"id"` // 推送唯一标识。
+	Id                 string `json:"id"`
 }
 
 // Push 发送全量用户不落地通知
