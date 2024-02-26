@@ -13,6 +13,7 @@ func main() {
 	rc := rongcloud.NewRongCloud(os.Getenv("APP_KEY"), os.Getenv("APP_SECRET"))
 	ctx := context.Background()
 
+	// 设置用户级推送备注名
 	_, err := rc.UserRemarksSet(ctx, &rongcloud.UserRemarksSetRequest{
 		UserId: rongcloud.StringPtr("u01"),
 		Remarks: []*rongcloud.UserRemark{
@@ -29,6 +30,7 @@ func main() {
 		log.Fatalf("user remarks set error %s", err)
 	}
 
+	// 查询用户级推送备注名
 	userRemarksGetResp, err := rc.UserRemarksGet(ctx, &rongcloud.UserRemarksGetRequest{
 		UserId: rongcloud.StringPtr("u01"),
 		Page:   rongcloud.IntPtr(1),
@@ -40,6 +42,7 @@ func main() {
 	userRemarksGetRespData, _ := json.Marshal(userRemarksGetResp)
 	log.Printf("user remarks get response data: %s", userRemarksGetRespData)
 
+	// 删除用户级推送备注名
 	_, err = rc.UserRemarksDel(ctx, &rongcloud.UserRemarksDelRequest{
 		UserId:   rongcloud.StringPtr("u01"),
 		TargetId: rongcloud.StringPtr("u02"),

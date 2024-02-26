@@ -69,7 +69,7 @@ func main() {
 		sdk.WithMaxIdleConnsPerHost(100),
 		)
 	
-	// 方法2： 自定义 http client， 调用 set 方法设置
+	// 方法2： 自定[userblacklist.go](examples%2Fuser%2Fuserblacklist.go)义 http client， 调用 set 方法设置
 	dialer := &net.Dialer{
         Timeout:   10 * time.Second,
         KeepAlive: 30 * time.Second,
@@ -86,7 +86,7 @@ func main() {
 ### GO SDK 功能支持的版本清单
 
 * [消息发送](./examples/message/README.md)
-* [用户信息](./examples/user)
+* [用户管理](./examples/user/README.md)
 * [聊天室](./examples/chatroom)
 * [群组](./examples/group)
 * [超级群](./examples/ultragroup)

@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("user whitelist add error %s", err)
 	}
 
-	// 移除白名单中用户
+	// 查询白名单中用户列表
 	whitelistQueryResp, err := rc.UserWhitelistQuery(ctx, &rongcloud.UserWhitelistQueryRequest{
 		UserId: rongcloud.StringPtr("u01"),
 	})
@@ -32,7 +32,7 @@ func main() {
 	whitelistQueryRespData, _ := json.Marshal(whitelistQueryResp)
 	log.Printf("user whitelist query response data: %s", whitelistQueryRespData)
 
-	// 查询白名单中用户列表
+	// 移除白名单中用户
 	_, err = rc.UserWhitelistRemove(ctx, &rongcloud.UserWhitelistRemoveRequest{
 		UserId:      rongcloud.StringPtr("u01"),
 		WhiteUserId: []string{"u02", "u03"},
