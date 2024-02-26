@@ -189,7 +189,7 @@ func chatroomUserBlock(ctx context.Context, rc *rongcloud.RongCloud) {
 }
 
 func chatroomMessagePriority(ctx context.Context, rc *rongcloud.RongCloud) {
-	// add message priority
+	// 添加低级别消息类型
 	vcMsg := "RC:VcMsg"
 	imgMsg := "RC:ImgMsg"
 	addResp, err := rc.ChatroomMessagePriorityAdd(ctx, &rongcloud.ChatroomMessagePriorityAddRequest{
@@ -201,7 +201,7 @@ func chatroomMessagePriority(ctx context.Context, rc *rongcloud.RongCloud) {
 	addData, _ := json.Marshal(addResp)
 	log.Printf("chatroom message priority add resp: %s", addData)
 
-	// query after add
+	// 查询低级别消息类型
 	query2Resp, err := rc.ChatroomMessagePriorityQuery(ctx, nil)
 	if err != nil {
 		log.Fatalf("chatroom message priority query err: %s", err)
@@ -209,7 +209,7 @@ func chatroomMessagePriority(ctx context.Context, rc *rongcloud.RongCloud) {
 	query2Data, _ := json.Marshal(query2Resp)
 	log.Printf("chatroom query response data %s", query2Data)
 
-	// remove message priority
+	// 移除低级别消息类型
 	removeResp, err := rc.ChatroomMessagePriorityRemove(ctx, &rongcloud.ChatroomMessagePriorityRemoveRequest{
 		ObjectNames: []string{vcMsg, imgMsg},
 	})
@@ -221,18 +221,23 @@ func chatroomMessagePriority(ctx context.Context, rc *rongcloud.RongCloud) {
 }
 
 func chatroomKeepAlive(ctx context.Context, rc *rongcloud.RongCloud) {
+	// 保活聊天室
 	addResp, err := rc.ChatroomKeepaliveAdd(ctx, &rongcloud.ChatroomKeepaliveAddRequest{ChatroomId: rongcloud.StringPtr("grp1")})
 	if err != nil {
 		log.Fatalf("chatroom keepalive add resp err %s", err)
 	}
 	addData, _ := json.Marshal(addResp)
 	log.Printf("chatroom keepalive add resp: %s", addData)
+
+	// 查询保活聊天室
 	queryResp, err := rc.ChatroomKeepaliveQuery(ctx, nil)
 	if err != nil {
 		log.Fatalf("chatroom keepalive query resp err %s", err)
 	}
 	queryData, _ := json.Marshal(queryResp)
 	log.Printf("chatroom keepalive query resp: %s", queryData)
+
+	// 取消保活聊天室
 	removeResp, err := rc.ChatroomKeepaliveRemove(ctx, &rongcloud.ChatroomKeepaliveRemoveRequest{ChatroomId: rongcloud.StringPtr("grp1")})
 	if err != nil {
 		log.Fatalf("chatroom keepalive remove err %s", err)

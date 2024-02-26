@@ -87,9 +87,9 @@ func main() {
 
 * [消息发送](./examples/message/README.md)
 * [用户管理](./examples/user/README.md)
-* [聊天室](./examples/chatroom)
-* [群组](./examples/group)
+* [聊天室](./examples/chatroom/README.md)
+* [群组](./examples/group/README.md)
 * [超级群](./examples/ultragroup)
-* [会话](./examples/conversation)
+* [会话](./examples/conversation/README.md)
 * [推送](./examples/push)
 * [敏感词](./examples/sensitive)

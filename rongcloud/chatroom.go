@@ -22,7 +22,7 @@ type ChatroomUserExistResponse struct {
 	IsInChrm bool `json:"isInChrm"`
 }
 
-// ChatroomUserExist checking whether the member is in the chatroom. 查询是否在聊天室中
+// ChatroomUserExist 查询是否在聊天室中
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/check-member
 func (rc *RongCloud) ChatroomUserExist(ctx context.Context, req *ChatroomUserExistRequest) (*ChatroomUserExistResponse, error) {
 	resp := &ChatroomUserExistResponse{}
@@ -114,7 +114,7 @@ type ChatroomDestroySetResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomDestroySet set chatroom destroy type
+// ChatroomDestroySet 设置聊天室销毁类型
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/set-destroy-type
 func (rc *RongCloud) ChatroomDestroySet(ctx context.Context, req *ChatroomDestroySetRequest) (*ChatroomDestroySetResponse, error) {
 	params := url.Values{}
@@ -152,7 +152,7 @@ type ChatroomGetResponse struct {
 	httpResponseGetter
 }
 
-// ChatroomGet get chatroom
+// ChatroomGet 查询聊天室信息
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/get
 func (rc *RongCloud) ChatroomGet(ctx context.Context, req *ChatroomGetRequest) (*ChatroomGetResponse, error) {
 	params := url.Values{}
@@ -351,7 +351,7 @@ type ChatroomDestroyResponse struct {
 	httpResponseGetter `json:"-"`
 }
 
-// ChatroomDestroy destroy chatroom  销毁聊天室
+// ChatroomDestroy 销毁聊天室
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/destroy
 func (rc *RongCloud) ChatroomDestroy(ctx context.Context, req *ChatroomDestroyRequest) (*ChatroomDestroyResponse, error) {
 	params := url.Values{}
@@ -802,7 +802,7 @@ type ChatroomMessagePriorityQueryResponse struct {
 	ObjectNames        []string `json:"objectNames"` // 消息类型数组。
 }
 
-// ChatroomMessagePriorityQuery
+// ChatroomMessagePriorityQuery 查询低级别消息类型
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/query-low-priority-message-type
 func (rc *RongCloud) ChatroomMessagePriorityQuery(ctx context.Context, req *ChatroomMessagePriorityQueryRequest) (*ChatroomMessagePriorityQueryResponse, error) {
 	resp := &ChatroomMessagePriorityQueryResponse{}
