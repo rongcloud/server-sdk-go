@@ -12,6 +12,7 @@ func main() {
 	ctx := context.Background()
 	rc := rongcloud.NewRongCloud(os.Getenv("APP_KEY"), os.Getenv("APP_SECRET"))
 
+	// 发送聊天室消息
 	_, err := rc.MessageChatroomPublish(ctx, &rongcloud.MessageChatroomPublishRequest{
 		FromUserId:   rongcloud.StringPtr("u01"),
 		ToChatroomId: []string{"chrm01", "chrm02"},
