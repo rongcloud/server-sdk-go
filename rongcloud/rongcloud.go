@@ -49,9 +49,9 @@ const (
 	// USERAGENT sdk 名称
 	USERAGENT = "rc-go-sdk/4.0.0"
 	// DEFAULTTIMEOUT 默认超时时间，10秒
-	DEFAULTTIMEOUT = 10
+	DEFAULTTIMEOUT = 10 * time.Second
 	// DEFAULT_KEEPALIVE http 默认保活时间，30秒
-	DEFAULT_KEEPALIVE = 30
+	DEFAULT_KEEPALIVE = 30 * time.Second
 	// DEFAULT_MAXIDLECONNSPERHOST http 默认每个域名连接数，100
 	DEFAULT_MAXIDLECONNSPERHOST = 100
 	// 自动切换 api 地址时间间隔，秒
@@ -67,10 +67,9 @@ var (
 		maxIdleConnsPerHost: DEFAULT_MAXIDLECONNSPERHOST,
 		count:               0,
 		changeUriDuration:   DEFAULT_CHANGE_URI_DURATION,
-		lastChageUriTime:    0,
+		lastChangeUriTime:   0,
 	}
-	rc   *RongCloud
-	once sync.Once
+	rc *RongCloud
 )
 
 // RongCloud appKey appSecret extra
@@ -80,12 +79,7 @@ type RongCloud struct {
 	*rongCloudExtra
 	uriLock         sync.Mutex
 	globalTransport http.RoundTripper
-	HttpClient      *http.Client
-	Setting         Setting
-}
-
-type Setting struct {
-	DisableCodeCheck bool // disable default check actions for http code and rongCloud code, details see examples/settings
+	httpClient      *http.Client
 }
 
 // rongCloudExtra rongCloud扩展增加自定义融云服务器地址,请求超时时间
@@ -97,13 +91,13 @@ type rongCloudExtra struct {
 	maxIdleConnsPerHost int
 	count               uint
 	changeUriDuration   int64
-	lastChageUriTime    int64
+	lastChangeUriTime   int64
 }
 
 // getSignature 本地生成签名
 // Signature (数据签名)计算方法：将系统分配的 App Secret、Nonce (随机数)、
 // Timestamp (时间戳)三个字符串按先后顺序拼接成一个字符串并进行 SHA1 哈希计算。如果调用的数据签名验证失败，接口调用会返回 HTTP 状态码 401。
-func (rc RongCloud) getSignature() (nonce, timestamp, signature string) {
+func (rc *RongCloud) getSignature() (nonce, timestamp, signature string) {
 	nonceInt := rand.Int()
 	nonce = strconv.Itoa(nonceInt)
 	timeInt64 := time.Now().Unix()
@@ -114,12 +108,8 @@ func (rc RongCloud) getSignature() (nonce, timestamp, signature string) {
 	return
 }
 
-func (rc *RongCloud) setContentTypeJson(req *http.Request) {
-	req.Header.Set("Content-Type", "application/json")
-}
-
 // fillHeader 在 Http Header 增加API签名
-func (rc RongCloud) fillHeader(ctx context.Context, req *http.Request) {
+func (rc *RongCloud) fillHeader(ctx context.Context, req *http.Request) {
 	nonce, timestamp, signature := rc.getSignature()
 	req.Header.Set("RC-App-Key", rc.appKey)
 	req.Header.Set("RC-Timestamp", timestamp)
@@ -136,32 +126,29 @@ func (rc RongCloud) fillHeader(ctx context.Context, req *http.Request) {
 
 // NewRongCloud 创建 RongCloud 对象
 func NewRongCloud(appKey, appSecret string, options ...rongCloudOption) *RongCloud {
-	once.Do(func() {
-		// 默认扩展配置
-		defaultRongCloud := defaultExtra
-		defaultRongCloud.lastChageUriTime = 0
-		rc = &RongCloud{
-			appKey:         appKey,
-			appSecret:      appSecret,
-			rongCloudExtra: &defaultRongCloud,
-		}
+	// 默认扩展配置
+	defaultRongCloud := defaultExtra
+	defaultRongCloud.lastChangeUriTime = 0
+	rc = &RongCloud{
+		appKey:         appKey,
+		appSecret:      appSecret,
+		rongCloudExtra: &defaultRongCloud,
+	}
 
-		for _, option := range options {
-			option(rc)
-		}
+	for _, option := range options {
+		option(rc)
+	}
 
-		if rc.globalTransport == nil {
-			rc.globalTransport = &http.Transport{
-				DialContext: (&net.Dialer{
-					Timeout:   rc.timeout * time.Second,
-					KeepAlive: rc.keepAlive * time.Second,
-				}).DialContext,
-				MaxIdleConnsPerHost: rc.maxIdleConnsPerHost,
-			}
-		}
-	})
-	rc.HttpClient = http.DefaultClient
-
+	if rc.httpClient == nil {
+		rc.httpClient = http.DefaultClient
+	}
+	rc.httpClient.Transport = &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout:   rc.timeout,
+			KeepAlive: rc.keepAlive,
+		}).DialContext,
+		MaxIdleConnsPerHost: rc.maxIdleConnsPerHost,
+	}
 	return rc
 }
 
@@ -181,11 +168,11 @@ func (rc *RongCloud) GetHttpTransport() http.RoundTripper {
 
 // changeURI 自动切换 Api 服务器地址
 // 在 api、api2之间自动切换。无法切换其他域名。其他请使用 PrivateURI 设置
-func (rc *RongCloud) ChangeURI() {
+func (rc *RongCloud) changeURI() {
 	nowUnix := time.Now().Unix()
 	// 检查距离上次更换uri的时间间隔
 	rc.uriLock.Lock()
-	if (nowUnix - rc.lastChageUriTime) >= rc.changeUriDuration {
+	if (nowUnix - rc.lastChangeUriTime) >= rc.changeUriDuration {
 		switch rc.rongCloudURI {
 		case RONGCLOUDURI:
 			rc.rongCloudURI = RONGCLOUDURI2
@@ -193,7 +180,7 @@ func (rc *RongCloud) ChangeURI() {
 			rc.rongCloudURI = RONGCLOUDURI
 		default:
 		}
-		rc.lastChageUriTime = nowUnix
+		rc.lastChangeUriTime = nowUnix
 	}
 	rc.uriLock.Unlock()
 }

@@ -17,9 +17,6 @@ func main() {
 }
 
 func chatroomMetaOp(ctx context.Context, rc *rongcloud.RongCloud) {
-	// just for test
-	rc.Setting.DisableCodeCheck = false
-
 	// create chatroom
 	resp, err := rc.ChatroomCreateNew(ctx, &rongcloud.ChatroomCreateNewRequest{
 		ChatroomId: rongcloud.StringPtr("grp1"),

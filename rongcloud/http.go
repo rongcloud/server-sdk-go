@@ -58,10 +58,10 @@ func isNetError(err error) bool {
 // do http request
 func (rc *RongCloud) do(b *http.Request, data interface{}) (*http.Response, error) {
 	// TODO http response copy body closer
-	resp, err := rc.HttpClient.Do(b)
+	resp, err := rc.httpClient.Do(b)
 	if err != nil {
 		if isNetError(err) {
-			rc.ChangeURI()
+			rc.changeURI()
 		}
 		return resp, err
 	}
@@ -79,16 +79,14 @@ func (rc *RongCloud) do(b *http.Request, data interface{}) (*http.Response, erro
 	if err != nil {
 		return resp, err
 	}
-	if !rc.Setting.DisableCodeCheck {
-		codeRes := &CodeResult{}
-		err = json.Unmarshal(body, &codeRes)
-		if err != nil {
-			// skip code result check failed
-			return resp, nil
-		}
-		if codeRes.Code != 200 && codeRes.Code != 10000 {
-			return resp, RCErrorNew(codeRes.Code, codeRes.ErrorMessage)
-		}
+	codeRes := &CodeResult{}
+	err = json.Unmarshal(body, &codeRes)
+	if err != nil {
+		// skip code result check failed
+		return resp, nil
+	}
+	if codeRes.Code != 200 && codeRes.Code != 10000 {
+		return resp, RCErrorNew(codeRes.Code, codeRes.ErrorMessage)
 	}
 	return resp, nil
 }
@@ -117,7 +115,7 @@ func (e CodeResult) ErrorCode() int {
 // 判断 http status code, 如果大于 500 就切换一次域名
 func (rc *RongCloud) changeURIIfNeed(resp *http.Response) {
 	if resp.StatusCode >= 500 && resp.StatusCode < 600 {
-		rc.ChangeURI()
+		rc.changeURI()
 	}
 
 	return
