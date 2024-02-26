@@ -15,6 +15,7 @@ import (
 type RCMsg interface {
 	ObjectName() string
 	ToString() (string, error)
+	// EncodeValues TODO 该移出去，因为无法保证用户正确set key objectName和content
 	EncodeValues(key string, v *url.Values) error
 }
 
