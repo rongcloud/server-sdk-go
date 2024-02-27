@@ -15,7 +15,7 @@ func makeUrlValues(v interface{}) (url.Values, error) {
 	return values, nil
 }
 
-func MakeRCMsgUrlValues(rcMsg RCMsg, key string, v *url.Values) error {
+func makeRCMsgUrlValues(rcMsg RCMsg, v url.Values) error {
 	v.Set("objectName", rcMsg.ObjectName())
 	content, err := rcMsg.ToString()
 	if err != nil {

@@ -57,7 +57,6 @@ func isNetError(err error) bool {
 
 // do http request
 func (rc *RongCloud) do(b *http.Request, data interface{}) (*http.Response, error) {
-	// TODO http response copy body closer
 	resp, err := rc.httpClient.Do(b)
 	if err != nil {
 		if isNetError(err) {
@@ -68,17 +67,14 @@ func (rc *RongCloud) do(b *http.Request, data interface{}) (*http.Response, erro
 	if resp.Body == nil {
 		return resp, nil
 	}
-	defer resp.Body.Close()
-
 	rc.changeURIIfNeed(resp)
 	body, err := io.ReadAll(resp.Body)
-	//if err = checkHTTPResponseCode(resp, data); err != nil {
-	//	return err
-	//}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		return resp, err
 	}
+	resp.Body.Close()
+	resp.Body = io.NopCloser(bytes.NewBuffer(body))
 	codeRes := &CodeResult{}
 	err = json.Unmarshal(body, &codeRes)
 	if err != nil {
@@ -145,8 +141,7 @@ func (rc *RongCloud) doRequest(ctx context.Context, path string, body io.Reader,
 		req, err = http.NewRequestWithContext(ctx, http.MethodPost, requestUrl, body)
 	}
 	if err != nil {
-		// TODO new request error more detail
-		return nil, err
+		return nil, fmt.Errorf("new http request error %w", err)
 	}
 
 	req.Header.Set("Content-Type", contentType)
@@ -218,5 +213,3 @@ var (
 func AddHttpRequestId(ctx context.Context, requestId string) context.Context {
 	return context.WithValue(ctx, ContextRequestIdKey, requestId)
 }
-
-// TODO add other custom http header key to ctx

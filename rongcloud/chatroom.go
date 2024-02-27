@@ -169,12 +169,12 @@ func (rc *RongCloud) ChatroomGet(ctx context.Context, req *ChatroomGetRequest) (
 }
 
 type ChatroomEntrySetRequest struct {
-	ChatroomId *string `json:"chatroomId"` // [必传] 聊天室 ID
-	UserId     *string `json:"userId"`     // [必传] 操作用户 ID。通过 Server API 非聊天室中用户可以进行设置。
-	Key        *string `json:"key"`        // [必传] 聊天室属性名称，Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，大小写敏感。最大长度 128 字符。每个聊天室中，最多允许设置 100 个属性 Key-Value 对。
-	Value      *string `json:"value"`      // [必传] 聊天室属性对应的值，最大长度 4096 个字符。
-	AutoDelete *int    `json:"autoDelete"` // 属性的操作用户退出聊天室后，是否删除此 Key 值。为 1 时删除此 Key 值和对应的 Value，为 0 时用户退出后不删除，默认为 0。
-	RCMsg      RCMsg   `json:"rcMsg"`      // 聊天室属性变化通知消息的消息类型，一般为内置消息类型 RC:chrmKVNotiMsg，也可以是其他自定义消息类型。如果传入该字段，则在聊天室属性变化时发送一条消息。
+	ChatroomId *string `url:"chatroomId,omitempty"` // [必传] 聊天室 ID
+	UserId     *string `url:"userId,omitempty"`     // [必传] 操作用户 ID。通过 Server API 非聊天室中用户可以进行设置。
+	Key        *string `url:"key,omitempty"`        // [必传] 聊天室属性名称，Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，大小写敏感。最大长度 128 字符。每个聊天室中，最多允许设置 100 个属性 Key-Value 对。
+	Value      *string `url:"value,omitempty"`      // [必传] 聊天室属性对应的值，最大长度 4096 个字符。
+	AutoDelete *int    `url:"autoDelete,omitempty"` // 属性的操作用户退出聊天室后，是否删除此 Key 值。为 1 时删除此 Key 值和对应的 Value，为 0 时用户退出后不删除，默认为 0。
+	RCMsg      RCMsg   `url:"-"`                    // 聊天室属性变化通知消息的消息类型，一般为内置消息类型 RC:chrmKVNotiMsg，也可以是其他自定义消息类型。如果传入该字段，则在聊天室属性变化时发送一条消息。
 }
 
 type ChatroomEntrySetResponse struct {
@@ -185,29 +185,15 @@ type ChatroomEntrySetResponse struct {
 // ChatroomEntrySet set chatroom entry kv (设置聊天室属性（KV）)
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/set-kv-entry
 func (rc *RongCloud) ChatroomEntrySet(ctx context.Context, req *ChatroomEntrySetRequest) (*ChatroomEntrySetResponse, error) {
-	params := url.Values{}
-	if req.ChatroomId != nil {
-		params.Set("chatroomId", StringValue(req.ChatroomId))
-	}
-	if req.UserId != nil {
-		params.Set("userId", StringValue(req.UserId))
-	}
-	if req.Key != nil {
-		params.Set("key", StringValue(req.Key))
-	}
-	if req.Value != nil {
-		params.Set("value", StringValue(req.Value))
-	}
-	if req.AutoDelete != nil {
-		params.Set("autoDelete", strconv.Itoa(IntValue(req.AutoDelete)))
+	params, err := makeUrlValues(req)
+	if err != nil {
+		return nil, err
 	}
 	if req.RCMsg != nil {
-		params.Set("objectName", req.RCMsg.ObjectName())
-		content, err := req.RCMsg.ToString()
+		err = makeRCMsgUrlValues(req.RCMsg, params)
 		if err != nil {
-			return nil, fmt.Errorf("RCMsg ToString() error: %w", err)
+			return nil, err
 		}
-		params.Set("content", content)
 	}
 	resp := &ChatroomEntrySetResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, "/chatroom/entry/set.json", params, &resp)
@@ -264,10 +250,10 @@ func (rc *RongCloud) ChatroomEntryBatchSet(ctx context.Context, req *ChatroomEnt
 }
 
 type ChatroomEntryRemoveRequest struct {
-	ChatroomId *string `json:"chatroomId"` // [必传] 聊天室 ID。
-	UserId     *string `json:"userId"`     // [必传] 操作用户 ID。通过 Server API 非聊天室中用户可以进行设置。
-	Key        *string `json:"key"`        // [必传] 聊天室属性名称，Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，大小写敏感。最大长度 128 字。
-	RCMsg      RCMsg   `json:"rcMsg"`      // 通聊天室属性变化通知消息的消息类型，一般为内置消息类型 ChrmKVNotiMsg，也可以是其他自定义消息类型。如果传入该字段，则在聊天室属性变化时发送一条消息。
+	ChatroomId *string `url:"chatroomId,omitempty"` // [必传] 聊天室 ID。
+	UserId     *string `url:"userId,omitempty"`     // [必传] 操作用户 ID。通过 Server API 非聊天室中用户可以进行设置。
+	Key        *string `url:"key,omitempty"`        // [必传] 聊天室属性名称，Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，大小写敏感。最大长度 128 字。
+	RCMsg      RCMsg   `url:"-"`                    // 通聊天室属性变化通知消息的消息类型，一般为内置消息类型 ChrmKVNotiMsg，也可以是其他自定义消息类型。如果传入该字段，则在聊天室属性变化时发送一条消息。
 }
 
 type ChatroomEntryRemoveResponse struct {
@@ -279,24 +265,15 @@ type ChatroomEntryRemoveResponse struct {
 // More details see https://doc.rongcloud.cn/imserver/server/v1/chatroom/remove-kv-entry
 func (rc *RongCloud) ChatroomEntryRemove(ctx context.Context, req *ChatroomEntryRemoveRequest) (*ChatroomEntryRemoveResponse, error) {
 	path := "/chatroom/entry/remove.json"
-	params := url.Values{}
-	if req.ChatroomId != nil {
-		params.Set("chatroomId", StringValue(req.ChatroomId))
-	}
-	if req.UserId != nil {
-		params.Set("userId", StringValue(req.UserId))
-	}
-	if req.Key != nil {
-		params.Set("key", StringValue(req.Key))
+	params, err := makeUrlValues(req)
+	if err != nil {
+		return nil, err
 	}
 	if req.RCMsg != nil {
-		objectName := req.RCMsg.ObjectName()
-		content, err := req.RCMsg.ToString()
+		err = makeRCMsgUrlValues(req.RCMsg, params)
 		if err != nil {
-			return nil, fmt.Errorf("RCMsg ToString error %w", err)
+			return nil, err
 		}
-		params.Set("objectName", objectName)
-		params.Set("content", content)
 	}
 	resp := &ChatroomEntryRemoveResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)

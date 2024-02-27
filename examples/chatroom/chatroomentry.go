@@ -69,6 +69,12 @@ func chatroomEntry(ctx context.Context, rc *rongcloud.RongCloud) {
 		ChatroomId: rongcloud.StringPtr(grp),
 		UserId:     rongcloud.StringPtr("u01"),
 		Key:        rongcloud.StringPtr("key1"),
+		RCMsg: &rongcloud.ChrmKVNotiMsg{
+			Type:  2,
+			Key:   "key1",
+			Value: "val1",
+			Extra: "extra info",
+		},
 	})
 	if err != nil {
 		log.Fatalf("chatroom entry remove %s", err)

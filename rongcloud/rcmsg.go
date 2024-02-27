@@ -2,7 +2,6 @@ package rongcloud
 
 import (
 	"encoding/json"
-	"net/url"
 )
 
 // RCMsg
@@ -15,8 +14,6 @@ import (
 type RCMsg interface {
 	ObjectName() string
 	ToString() (string, error)
-	// EncodeValues TODO 该移出去，因为无法保证用户正确set key objectName和content
-	EncodeValues(key string, v *url.Values) error
 }
 
 // MsgUserInfo 融云内置消息用户信息
@@ -44,10 +41,6 @@ func (m *TXTMsg) ToString() (string, error) {
 	return string(b), err
 }
 
-func (m *TXTMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
-}
-
 // ImgMsg 消息
 type ImgMsg struct {
 	Content  string       `json:"content,omitempty"`  // [必传] 图片缩略图进行 Base64 编码的结果值。Base64 字符串长度建议为 5k，最大不超过 10k。注意在 Base64 进行 Encode 后需要将所有 \r\n 和 \r 和 \n 替换成空。
@@ -65,10 +58,6 @@ func (m *ImgMsg) ToString() (string, error) {
 	return string(b), err
 }
 
-func (m *ImgMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
-}
-
 // InfoNtf 提示（小灰条）通知消息
 // https://doc.rongcloud.cn/imserver/server/v1/message/objectname-notification
 type InfoNtf struct {
@@ -84,10 +73,6 @@ func (m *InfoNtf) ObjectName() string {
 func (m *InfoNtf) ToString() (string, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
-}
-
-func (m *InfoNtf) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
 }
 
 // VCMsg 旧版语音消息, 推荐使用高清语音消息 HQVCMsg
@@ -108,10 +93,6 @@ func (m *VCMsg) ToString() (string, error) {
 	return string(b), err
 }
 
-func (m *VCMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
-}
-
 // HQVCMsg 高清语音消息
 // https://doc.rongcloud.cn/imserver/server/v1/message/objectname#%E9%AB%98%E6%B8%85%E8%AF%AD%E9%9F%B3%E6%B6%88%E6%81%AF%E5%86%85%E5%AE%B9%E7%BB%93%E6%9E%84%E4%BD%93
 type HQVCMsg struct {
@@ -128,10 +109,6 @@ func (m *HQVCMsg) ObjectName() string {
 func (m *HQVCMsg) ToString() (string, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
-}
-
-func (m *HQVCMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
 }
 
 // IMGTextMsg 图文消息
@@ -154,10 +131,6 @@ func (m *IMGTextMsg) ToString() (string, error) {
 	return string(b), err
 }
 
-func (m *IMGTextMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
-}
-
 // FileMsg 文件消息
 // https://doc.rongcloud.cn/imserver/server/v1/message/objectname#%E6%96%87%E4%BB%B6%E6%B6%88%E6%81%AF
 type FileMsg struct {
@@ -175,10 +148,6 @@ func (m *FileMsg) ObjectName() string {
 func (m *FileMsg) ToString() (string, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
-}
-
-func (m *FileMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
 }
 
 // LBSMsg 位置消息
@@ -201,10 +170,6 @@ func (m *LBSMsg) ToString() (string, error) {
 	return string(b), err
 }
 
-func (m *LBSMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
-}
-
 // ProfileNtf 资料变更通知消息
 // https://doc.rongcloud.cn/imserver/server/v1/message/objectname-notification#%E8%B5%84%E6%96%99%E5%8F%98%E6%9B%B4%E9%80%9A%E7%9F%A5%E6%B6%88%E6%81%AF
 type ProfileNtf struct {
@@ -221,10 +186,6 @@ func (m *ProfileNtf) ObjectName() string {
 func (m *ProfileNtf) ToString() (string, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
-}
-
-func (m *ProfileNtf) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
 }
 
 // CMDNtf 命令提醒消息
@@ -244,10 +205,6 @@ func (m *CMDNtf) ToString() (string, error) {
 	return string(b), err
 }
 
-func (m *CMDNtf) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
-}
-
 // CMDMsg 命令消息
 // https://doc.rongcloud.cn/imserver/server/v1/message/objectname-callback#%E5%91%BD%E4%BB%A4%E6%B6%88%E6%81%AF
 type CMDMsg struct {
@@ -263,10 +220,6 @@ func (m *CMDMsg) ObjectName() string {
 func (m *CMDMsg) ToString() (string, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
-}
-
-func (m *CMDMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
 }
 
 // ContactNtf 联系人（好友）通知消息
@@ -289,10 +242,6 @@ func (m *ContactNtf) ToString() (string, error) {
 	return string(b), err
 }
 
-func (m *ContactNtf) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
-}
-
 // GrpNtf 群组通知消息
 // https://doc.rongcloud.cn/imserver/server/v1/message/objectname-notification#%E7%BE%A4%E7%BB%84%E9%80%9A%E7%9F%A5%E6%B6%88%E6%81%AF
 type GrpNtf struct {
@@ -313,16 +262,16 @@ func (m *GrpNtf) ToString() (string, error) {
 	return string(b), err
 }
 
-func (m *GrpNtf) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
-}
-
 // ChrmKVNotiMsg 聊天室属性通知消息
 // https://doc.rongcloud.cn/imserver/server/v1/message/objectname-callback#%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%B1%9E%E6%80%A7%E9%80%9A%E7%9F%A5%E6%B6%88%E6%81%AF
 type ChrmKVNotiMsg struct {
-	Type  int    `json:"type,omitempty"`
-	Key   string `json:"key,omitempty"`
+	// [必传] 聊天室中对属性操作后发送通知的类型，1 为设置属性内容、2 为删除属性内容。
+	Type int `json:"type,omitempty"`
+	// [必传] 聊天室中属性名称，大小不超过 128 个字符。
+	Key string `json:"key,omitempty"`
+	// [必传] 属性对应的内容，大小不超过 4096 个字符。
 	Value string `json:"value,omitempty"`
+	// 通过消息中携带的附加信息，对应到设置属性接口中的 notificationExtra 值。
 	Extra string `json:"extra,omitempty"`
 }
 
@@ -333,8 +282,4 @@ func (m *ChrmKVNotiMsg) ObjectName() string {
 func (m *ChrmKVNotiMsg) ToString() (string, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
-}
-
-func (m *ChrmKVNotiMsg) EncodeValues(key string, v *url.Values) error {
-	return MakeRCMsgUrlValues(m, key, v)
 }

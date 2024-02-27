@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"net/url"
 	"os"
 
 	"github.com/google/uuid"
@@ -93,8 +92,4 @@ func (m *CustomJsonMsg) ObjectName() string {
 func (m *CustomJsonMsg) ToString() (string, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
-}
-
-func (m *CustomJsonMsg) EncodeValues(key string, v *url.Values) error {
-	return rongcloud.MakeRCMsgUrlValues(m, key, v)
 }

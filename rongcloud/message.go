@@ -54,12 +54,10 @@ func (r *MessagePrivatePublishRequest) MakeFormData() (url.Values, error) {
 		res.Set("toUserId", StringValue(r.ToUserId))
 	}
 	if r.RCMsg != nil {
-		content, err := r.RCMsg.ToString()
+		err := makeRCMsgUrlValues(r.RCMsg, res)
 		if err != nil {
-			return nil, NewSDKError(fmt.Sprintf("RCMsg ToString error %s", err))
+			return nil, err
 		}
-		res.Set("objectName", r.RCMsg.ObjectName())
-		res.Set("content", content)
 	}
 	if r.PushData != nil {
 		res.Set("pushData", StringValue(r.PushData))
@@ -357,7 +355,7 @@ type MessageBroadcastRequest struct {
 	// 注意：发送消息所使用的用户 ID 必须已获取过用户 Token，否则消息一旦触发离线推送，通知内无法正确显示发送者的用户信息。
 	FromUserId *string `url:"fromUserId,omitempty"`
 	// [必传] 消息类型参数的SDK封装, 例如: TXTMsg(文本消息), HQVCMsg(高清语音消息)
-	RCMsg RCMsg `url:"RCMsg,omitempty"`
+	RCMsg RCMsg `url:"-"`
 	// 指定收件人离线时触发的远程推送通知中的通知内容。注意：对于部分消息类型，该字段是否有值决定了是否触发远程推送通知。
 	// 如果消息类型（objectName 字段）为即时通讯服务预定义消息类型中的用户内容类消息格式，可不填写该字段，远程推送通知默认使用服务端预置的推送通知内容。
 	// 如果消息类型（objectName 字段）为即时通讯服务预定义消息类型中通知类、信令类（"撤回命令消息" 除外），且需要支持远程推送通知，则必须填写 pushContent，否则收件人不在线时无法收到远程推送通知。如无需触发远程推送，可不填该字段。
@@ -385,6 +383,12 @@ func (rc *RongCloud) MessageBroadcast(ctx context.Context, req *MessageBroadcast
 	if err != nil {
 		return nil, err
 	}
+	if req.RCMsg != nil {
+		err = makeRCMsgUrlValues(req.RCMsg, params)
+		if err != nil {
+			return nil, err
+		}
+	}
 	resp := &MessageBroadcastResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
@@ -397,7 +401,7 @@ type StatusMessagePrivatePublishRequest struct {
 	// [必传] 接收用户 ID，支持向多人发送消息，每次上限为 1000 人。
 	ToUserIds []string `url:"toUserId,omitempty"`
 	// [必传] 消息类型参数的SDK封装, 例如: TXTMsg(文本消息), HQVCMsg(高清语音消息)
-	RCMsg RCMsg `url:"RCMsg,omitempty"`
+	RCMsg RCMsg `url:"-"`
 	// 是否过滤发送人黑名单列表，0 表示为不过滤、 1 表示为过滤，默认为 0 不过滤。
 	VerifyBlacklist *int `url:"verifyBlacklist,omitempty"`
 	// 是否向发件人客户端同步已发消息。1 表示同步，默认值为 0，即不同步。注意，该接口用于发送状态消息，因此仅支持在发件人已登陆客户端（在线）的情况下同步已发消息。
@@ -416,6 +420,12 @@ func (rc *RongCloud) StatusMessagePrivatePublish(ctx context.Context, req *Statu
 	params, err := makeUrlValues(req)
 	if err != nil {
 		return nil, err
+	}
+	if req.RCMsg != nil {
+		err = makeRCMsgUrlValues(req.RCMsg, params)
+		if err != nil {
+			return nil, err
+		}
 	}
 	resp := &StatusMessagePrivatePublishResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
@@ -548,7 +558,7 @@ type MessageGroupPublishRequest struct {
 	ToUserId []string `url:"toUserId,omitempty"`
 
 	// [必传] 消息类型参数的SDK封装, 例如: TXTMsg(文本消息)
-	RCMsg RCMsg `url:"RCMsg,omitempty"`
+	RCMsg RCMsg `url:"-"`
 
 	// 指定收件人离线时触发的远程推送通知中的通知内容。注意：对于部分消息类型，该字段是否有值决定了是否触发远程推送通知。
 	// 如果消息类型（objectName 字段）为即时通讯服务预定义消息类型中的用户内容类消息格式，可不填写该字段，远程推送通知默认使用服务端预置的推送通知内容。
@@ -606,7 +616,12 @@ func (rc *RongCloud) MessageGroupPublish(ctx context.Context, req *MessageGroupP
 	if err != nil {
 		return nil, err
 	}
-	// TODO extraContent EncodeValues
+	if req.RCMsg != nil {
+		err = makeRCMsgUrlValues(req.RCMsg, params)
+		if err != nil {
+			return nil, err
+		}
+	}
 	if req.ExtraContent != nil {
 		extraContent, err := json.Marshal(req.ExtraContent)
 		if err != nil {
@@ -628,7 +643,7 @@ type StatusMessageGroupPublishRequest struct {
 	ToGroupId []string `url:"toGroupId,omitempty"`
 
 	// [必传] 消息类型参数的SDK封装, 例如: TXTMsg(文本消息)
-	RCMsg RCMsg `url:"RCMsg,omitempty"`
+	RCMsg RCMsg `url:"-"`
 
 	// 是否向发件人客户端同步已发消息。1 表示同步，默认值为 0，即不同步。注意，该接口用于发送状态消息，因此仅支持在发件人已登陆客户端（在线）的情况下同步已发消息。
 	IsIncludeSender *int `url:"isIncludeSender,omitempty"`
@@ -647,6 +662,12 @@ func (rc *RongCloud) StatusMessageGroupPublish(ctx context.Context, req *StatusM
 	if err != nil {
 		return nil, err
 	}
+	if req.RCMsg != nil {
+		err = makeRCMsgUrlValues(req.RCMsg, params)
+		if err != nil {
+			return nil, err
+		}
+	}
 	resp := &StatusMessageGroupPublishResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
@@ -661,7 +682,7 @@ type MessageChatroomPublishRequest struct {
 	ToChatroomId []string `url:"toChatroomId,omitempty"`
 
 	// [必传] 消息类型参数的SDK封装, 例如: TXTMsg(文本消息)
-	RCMsg RCMsg `url:"RCMsg,omitempty"`
+	RCMsg RCMsg `url:"-"`
 
 	// 是否需要为收件人在历史消息云端存储服务中存储此条消息。0 表示不存储；1 表示存储。默认值为 1，存储（依赖聊天室消息云端存储服务）。
 	// 一般情况下（第 1、2 种情况），客户端是否存储消息不依赖此参数。以下第 3 种情况属于例外：
@@ -688,6 +709,12 @@ func (rc *RongCloud) MessageChatroomPublish(ctx context.Context, req *MessageCha
 	if err != nil {
 		return nil, err
 	}
+	if req.RCMsg != nil {
+		err = makeRCMsgUrlValues(req.RCMsg, params)
+		if err != nil {
+			return nil, err
+		}
+	}
 	resp := &MessageChatroomPublishResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
@@ -699,7 +726,7 @@ type MessageChatroomBroadcastRequest struct {
 	FromUserId *string `url:"fromUserId,omitempty"`
 
 	// [必传] 消息类型参数的SDK封装, 例如: TXTMsg(文本消息)
-	RCMsg RCMsg `url:"RCMsg,omitempty"`
+	RCMsg RCMsg `url:"-"`
 
 	// 是否向发件人客户端同步已发消息。1 表示同步，默认值为 0，即不同步。注意，仅设置该参数无法确保发件人客户端一定能获取到该条已发消息，您可能还需要启用其他服务。详见发件人客户端如何同步已发消息。
 	IsIncludeSender *int `url:"isIncludeSender,omitempty"`
@@ -718,6 +745,12 @@ func (rc *RongCloud) MessageChatroomBroadcast(ctx context.Context, req *MessageC
 	if err != nil {
 		return nil, err
 	}
+	if req.RCMsg != nil {
+		err = makeRCMsgUrlValues(req.RCMsg, params)
+		if err != nil {
+			return nil, err
+		}
+	}
 	resp := &MessageChatroomBroadcastResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
@@ -729,7 +762,7 @@ type MessageOnlineBroadcastRequest struct {
 	FromUserId *string `url:"fromUserId,omitempty"`
 
 	// [必传] 消息类型参数的SDK封装, 例如: TXTMsg(文本消息)
-	RCMsg RCMsg `url:"RCMsg,omitempty"`
+	RCMsg RCMsg `url:"-"`
 }
 
 type MessageOnlineBroadcastResponse struct {
@@ -744,6 +777,12 @@ func (rc *RongCloud) MessageOnlineBroadcast(ctx context.Context, req *MessageOnl
 	params, err := makeUrlValues(req)
 	if err != nil {
 		return nil, err
+	}
+	if req.RCMsg != nil {
+		err = makeRCMsgUrlValues(req.RCMsg, params)
+		if err != nil {
+			return nil, err
+		}
 	}
 	resp := &MessageOnlineBroadcastResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
@@ -760,7 +799,7 @@ type MessageSystemPublishRequest struct {
 	ToUserId []string `url:"toUserId,omitempty"`
 
 	// [必传] 消息类型参数的SDK封装, 例如: TXTMsg(文本消息)
-	RCMsg RCMsg `url:"RCMsg,omitempty"`
+	RCMsg RCMsg `url:"-"`
 
 	// 指定收件人离线时触发的远程推送通知中的通知内容。注意：对于部分消息类型，该字段是否有值决定了是否触发远程推送通知。
 	// 如果消息类型（objectName 字段）为即时通讯服务预定义消息类型中的用户内容类消息格式，可不填写该字段，远程推送通知默认使用服务端预置的推送通知内容。
@@ -803,6 +842,12 @@ func (rc *RongCloud) MessageSystemPublish(ctx context.Context, req *MessageSyste
 	params, err := makeUrlValues(req)
 	if err != nil {
 		return nil, err
+	}
+	if req.RCMsg != nil {
+		err = makeRCMsgUrlValues(req.RCMsg, params)
+		if err != nil {
+			return nil, err
+		}
 	}
 	resp := &MessageSystemPublishResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
