@@ -6,9 +6,6 @@ import (
 	"fmt"
 )
 
-// TODO ultraGroupMsgModify?
-// TODO /v2/ultragroups?
-
 type UltraGroupMsgGetRequest struct {
 	GroupId *string          `json:"groupId,omitempty" url:"groupId,omitempty"` // [必传] 超级群 ID
 	Msgs    []*UltraGroupMsg `json:"msgs,omitempty" url:"-"`                    // [必传] 消息的查询参数，单次请求最多获取 20 条消息。
@@ -1221,6 +1218,34 @@ func (rc *RongCloud) UltraGroupUserGroupChannelQuery(ctx context.Context, req *U
 	}
 	resp := &UltraGroupUserGroupChannelQueryResponse{}
 	httpResp, err := rc.postFormUrlencoded(ctx, path, params, &resp)
+	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
+	return resp, err
+}
+
+type UltraGroupMsgModifyRequest struct {
+	// [必传] 消息所属的超级群 ID。
+	GroupId *string `url:"groupId,omitempty"`
+	// 消息所属的超级群的会话频道 ID。仅在消息属于超级群默认频道（RCDefault）时可以不传该参数。
+	BusChannel *string `url:"busChannel,omitempty"`
+	// [必传] 消息发送者 ID。
+	FromUserId *string `url:"fromUserId,omitempty"`
+	// [必传] 消息唯一标识 ID，可通过全量消息路由功能获取。
+	MsgUID *string `url:"msgUID,omitempty"`
+	// [必传] 修改后的消息内容，单条消息最大 128k。消息类型无法修改。如果改前为文本消息内容体，则传入的新消息内容体必须同样为文本消息内容体。
+	Content *string `url:"content,omitempty"`
+}
+
+type UltraGroupMsgModifyResponse struct {
+	CodeResult
+	httpResponseGetter `json:"-"`
+}
+
+// UltraGroupMsgModify 修改超级群消息
+// More details see https://doc.rongcloud.cn/imserver/server/v1/ultragroup/modify-message
+func (rc *RongCloud) UltraGroupMsgModify(ctx context.Context, req *UltraGroupMsgModifyRequest) (*UltraGroupMsgModifyResponse, error) {
+	path := "/ultragroup/msg/modify.json"
+	resp := &UltraGroupMsgModifyResponse{}
+	httpResp, err := rc.postForm(ctx, path, req, &resp)
 	resp.httpResponseGetter = newRawHttpResponseGetter(httpResp)
 	return resp, err
 }

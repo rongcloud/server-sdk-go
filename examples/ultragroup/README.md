@@ -41,3 +41,4 @@
 | UltraGroupUserGroupUserAdd       | 超级群用户组添加用户    | [ultragroupusergroupuser.go](./ultragroupusergroupuser.go)             |
 | UltraGroupUserUserGroupQuery     | 超级群查询用户所属用户组  | [ultragroupusergroupuser.go](./ultragroupusergroupuser.go)             |
 | UltraGroupUserGroupUserDel       | 超级群用户组移出用户    | [ultragroupusergroupuser.go](./ultragroupusergroupuser.go)             |
+| UltraGroupMsgModify              | 修改超级群消息       | [urlgragroupmsgmodify.go](./urlgragroupmsgmodify.go)                   |
