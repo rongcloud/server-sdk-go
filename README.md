@@ -73,10 +73,10 @@ func main() {
 	rc := sdk.NewRongCloud("appKey",
 		"appSecret",
 		// 每个域名最大活跃连接数
-		sdk.WithMaxIdleConnsPerHost(100)![img.png](img.png),
+		sdk.WithMaxIdleConnsPerHost(100),
 		)
 	
-	// 方法2： 自定[userblacklist.go](examples%2Fuser%2Fuserblacklist.go)义 http client， 调用 set 方法设置
+	// 方法2： 自定义 http client， 调用 set 方法设置
 	dialer := &net.Dialer{
         Timeout:   10 * time.Second,
         KeepAlive: 30 * time.Second,
