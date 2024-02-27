@@ -142,26 +142,27 @@ func NewRongCloud(appKey, appSecret string, options ...rongCloudOption) *RongClo
 	if rc.httpClient == nil {
 		rc.httpClient = http.DefaultClient
 	}
-	rc.httpClient.Transport = &http.Transport{
-		DialContext: (&net.Dialer{
-			Timeout:   rc.timeout,
-			KeepAlive: rc.keepAlive,
-		}).DialContext,
-		MaxIdleConnsPerHost: rc.maxIdleConnsPerHost,
+	if rc.globalTransport != nil {
+		rc.httpClient.Transport = rc.globalTransport
+	} else {
+		rc.httpClient.Transport = &http.Transport{
+			DialContext: (&net.Dialer{
+				Timeout:   rc.timeout,
+				KeepAlive: rc.keepAlive,
+			}).DialContext,
+			MaxIdleConnsPerHost: rc.maxIdleConnsPerHost,
+		}
 	}
 	return rc
 }
 
-// GetRongCloud 获取 RongCloud 对象
-func GetRongCloud() *RongCloud {
-	return rc
-}
-
-// 自定义 http 参数
+// SetHttpTransport 自定义 http client 传输层参数
 func (rc *RongCloud) SetHttpTransport(httpTransport http.RoundTripper) {
 	rc.globalTransport = httpTransport
+	rc.httpClient.Transport = rc.globalTransport
 }
 
+// GetHttpTransport 获取http Client 传输层参数
 func (rc *RongCloud) GetHttpTransport() http.RoundTripper {
 	return rc.globalTransport
 }

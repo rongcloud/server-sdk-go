@@ -4,7 +4,7 @@ server-sdk-go
 Rong Cloud Server SDK in Go.
 
 # 版本说明
-当前版本为v4, 后续版本会保持向前兼容, 但不兼容旧的v3，v2等版本, 旧版本功能不再更新, 请升级后使用。
+当前版本为v4, 后续版本会保持向前兼容, 但不兼容旧的v3，v2等版本, 旧版本不再更新, 请升级后使用。
 
 # API文档
 - [官方文档](https://doc.rongcloud.cn/imserver/server/v1/overview)
@@ -54,11 +54,12 @@ func main() {
 ### http 参数优化
 
 - http连接相关的性能优化
-- `rongcloud.WithMaxIdleConnsPerHost` : 每个域名最大活跃连接数，默认 100
-- `rongcloud.WithTimeout` : 连接超时设置，默认 10 秒；最小单位为秒， `sdk.WithTimeout(30)` 表示设置为30秒
-- `rongcloud.WithKeepAlive` : 连接保活时间，默认 30 秒；最小单位为秒， `sdk.WithKeepAlive(30)` 表示设置保活时间为30秒
-- `rc.SetHttpTransport` : 手动设置 http client
-- `rc.GetHttpTransport` : 获得当前全局 http client
+- `rongcloud.WithMaxIdleConnsPerHost` : 每个域名最大活跃连接数，默认 100.
+- `rongcloud.WithTimeout` : 连接超时设置，默认 10 秒；最小单位为秒， `sdk.WithTimeout(30*time.Second)` 表示设置为30秒.
+- `rongcloud.WithKeepAlive` : 连接保活时间，默认 30 秒；最小单位为秒， `sdk.WithKeepAlive(30*time.Second)` 表示设置保活时间为30秒.
+- `rongcloud.WithTransport`: 设置 http client transport 参数，优先级大于其他http参数.
+- `rc.SetHttpTransport` : 实例上设置 http client transport 参数，优先级大于其他http参数.
+- `rc.GetHttpTransport` : 获得当前实例http client transport.
 
 ```go
 package main
@@ -70,10 +71,11 @@ import "github.com/rongcloud/server-sdk-go/v4/rongcloud"
 
 func main() {
 	// 方法1： 创建对象时设置
-	rc := sdk.NewRongCloud("appKey",
+	rc := rongcloud.NewRongCloud(
+        "appKey",
 		"appSecret",
 		// 每个域名最大活跃连接数
-		sdk.WithMaxIdleConnsPerHost(100),
+		rongcloud.WithMaxIdleConnsPerHost(100),
 		)
 	
 	// 方法2： 自定义 http client， 调用 set 方法设置
