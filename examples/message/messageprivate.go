@@ -78,6 +78,7 @@ func messagePrivate(ctx context.Context, rc *rongcloud.RongCloud) {
 	}
 }
 
+// CustomJsonMsg
 // 自定义消息类型需开发者自行实现rongcloud.RCMsg接口
 type CustomJsonMsg struct {
 	Field1 string
@@ -85,8 +86,9 @@ type CustomJsonMsg struct {
 	Field3 bool
 }
 
+// ObjectName 自定义消息ObjectName尽量不要以RC:开头
 func (m *CustomJsonMsg) ObjectName() string {
-	return "RC:CustomMsg"
+	return "XXX:CustomMsg"
 }
 
 func (m *CustomJsonMsg) ToString() (string, error) {
