@@ -4,13 +4,19 @@ server-sdk-go
 Rong Cloud Server SDK in Go.
 
 # 版本说明
-当前版本为v4, 后续版本会保持向前兼容, 但不兼容旧的v3，v2等版本, 旧版本不再更新, 请升级后使用。
+当前版本为v4, 该版本将保持向后兼容, 但不兼容旧的v3，v2等版本, 旧版本不再更新, 请升级后使用。
 
 # API文档
 - [官方文档](https://doc.rongcloud.cn/imserver/server/v1/overview)
 
 ## 如何使用
 
+### 安装
+```shell
+go get github.com/rongcloud/server-sdk-go/v4
+```
+
+### 示例1： 发送单聊消息
 ```go
 package main
 
@@ -49,7 +55,7 @@ func main() {
 }
 ```
 
-> 更多代码示例请参考 [examples](./examples/README.md) 
+> 更多示例请参考 [examples](./examples/README.md) 
 
 ### http 参数优化
 
