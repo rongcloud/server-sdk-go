@@ -98,7 +98,7 @@ func main() {
 }
 ```
 
-### GO SDK 功能支持的版本清单
+### GO SDK 功能支持清单
 
 * [消息发送](./examples/message/README.md)
 * [用户管理](./examples/user/README.md)
