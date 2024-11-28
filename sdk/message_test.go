@@ -98,7 +98,7 @@ func TestRongCloud_UGMessageModify(t *testing.T) {
 		os.Getenv("APP_KEY"),
 		os.Getenv("APP_SECRET"),
 	)
-	err := rc.UGMessagePublish("aa", "RC:TxtMsg", "{\"content\":\"1234455667788-0309-1-test\"}",
+	res, err := rc.UGMessagePublish("aa", "RC:TxtMsg", "{\"content\":\"1234455667788-0309-1-test\"}",
 		"", "", "1", "", "0", "0", "", "{\"key1\":\"key1\"}",
 		false, false, &PushExt{
 			Title:                "you have a new message.",
@@ -138,6 +138,7 @@ func TestRongCloud_UGMessageModify(t *testing.T) {
 		return
 	}
 	t.Log("ug message send suc")
+	t.Log(res)
 	time.Sleep(1 * time.Second)
 	// note : msgUID是通过全量消息路由获取， 详情：https://doc.rongcloud.cn/imserver/server/v1/message/sync
 	if res, err := rc.UGMessageModify("testExp0309", "aa", "C1PL-LJQR-0U1B-ADFN", "哈喽", UgMessageExtension{
@@ -217,7 +218,7 @@ func TestMessage_PrivateSend(t *testing.T) {
 		Extra:   "helloExtra",
 	}
 
-	err := rc.PrivateSend(
+	res, err := rc.PrivateSend(
 		"7Szq13MKRVortoknTAk7W8",
 		[]string{"4kIvGJmETlYqDoVFgWdYdM"},
 		"RC:TxtMsg",
@@ -231,6 +232,31 @@ func TestMessage_PrivateSend(t *testing.T) {
 		0,
 	)
 	t.Log(err)
+	t.Log(res)
+}
+
+func TestMessage_PrivateStatusSend(t *testing.T) {
+
+	rc := NewRongCloud(
+		os.Getenv("APP_KEY"),
+		os.Getenv("APP_SECRET"),
+	)
+
+	msg := TXTMsg{
+		Content: "hello",
+		Extra:   "helloExtra",
+	}
+
+	res, err := rc.PrivateStatusSend(
+		"7Szq13MKRVortoknTAk7W8",
+		[]string{"4kIvGJmETlYqDoVFgWdYdM"},
+		"RC:TxtMsg",
+		&msg,
+		0,
+		0,
+	)
+	t.Log(err)
+	t.Log(res)
 }
 
 func TestMessage_PrivateSendOptions(t *testing.T) {
@@ -245,7 +271,7 @@ func TestMessage_PrivateSendOptions(t *testing.T) {
 		Extra:   "helloExtra",
 	}
 
-	err := rc.PrivateSend(
+	res, err := rc.PrivateSend(
 		"7Szq13MKRVortoknTAk7W8",
 		[]string{"4kIvGJmETlYqDoVFgWdYdM"},
 		"RC:TxtMsg",
@@ -262,6 +288,7 @@ func TestMessage_PrivateSendOptions(t *testing.T) {
 		WithMsgBusChannel("bus"),
 	)
 	t.Log(err)
+	t.Log(res)
 }
 
 func TestMessage_PrivateRecall(t *testing.T) {
@@ -313,12 +340,13 @@ func TestMessage_PrivateSendTemplate(t *testing.T) {
 	var tpl []TemplateMsgContent
 	tpl = append(tpl, tpl1)
 	tpl = append(tpl, tpl2)
-	err := rc.PrivateSendTemplate(
+	res, err := rc.PrivateSendTemplate(
 		"7Szq13MKRVortoknTAk7W8",
 		"RC:TxtMsg",
 		msg,
 		tpl)
 	t.Log(err)
+	t.Log(res)
 }
 
 func TestRongCloud_GroupSend(t *testing.T) {
@@ -333,7 +361,7 @@ func TestRongCloud_GroupSend(t *testing.T) {
 		Extra:   "helloExtra",
 	}
 
-	err := rc.GroupSend(
+	res, err := rc.GroupSend(
 		"7Szq13MKRVortoknTAk7W8",
 		[]string{"CFtiYbXNQNYtSr7rzUfHco"},
 		[]string{},
@@ -345,6 +373,31 @@ func TestRongCloud_GroupSend(t *testing.T) {
 		0,
 	)
 	t.Log(err)
+	t.Log(res)
+}
+
+func TestRongCloud_GroupStatusSend(t *testing.T) {
+
+	rc := NewRongCloud(
+		os.Getenv("APP_KEY"),
+		os.Getenv("APP_SECRET"),
+	)
+
+	msg := TXTMsg{
+		Content: "hello",
+		Extra:   "helloExtra",
+	}
+
+	res, err := rc.GroupStatusSend(
+		"7Szq13MKRVortoknTAk7W8",
+		[]string{"CFtiYbXNQNYtSr7rzUfHco"},
+		"RC:TxtMsg",
+		&msg,
+		0,
+		0,
+	)
+	t.Log(err)
+	t.Log(res)
 }
 
 func TestRongCloud_PrivateRecall(t *testing.T) {
@@ -402,13 +455,14 @@ func TestRongCloud_ChatRoomSend(t *testing.T) {
 		Extra:   "helloExtra",
 	}
 
-	err := rc.ChatRoomSend(
+	res, err := rc.ChatRoomSend(
 		"7Szq13MKRVortoknTAk7W8",
 		[]string{"4kIvGJmETlYqDoVFgWdYdM"},
 		"RC:TxtMsg",
 		&msg, 0, 0,
 	)
 	t.Log(err)
+	t.Log(res)
 
 }
 
@@ -439,13 +493,13 @@ func TestRongCloud_OnlineBroadcast(t *testing.T) {
 		os.Getenv("APP_SECRET"),
 	)
 
-	code, err := rc.OnlineBroadcast(
+	res, err := rc.OnlineBroadcast(
 		"someone",
 		"RC:TxtMsg",
 		"hello everyone",
 	)
-	t.Log(string(code))
 	t.Log(err)
+	t.Log(res)
 }
 
 func TestRongCloud_SystemSend(t *testing.T) {
@@ -460,7 +514,7 @@ func TestRongCloud_SystemSend(t *testing.T) {
 		Extra:   "helloExtra",
 	}
 
-	err := rc.SystemSend(
+	res, err := rc.SystemSend(
 		"7Szq13MKRVortoknTAk7W8",
 		[]string{"4kIvGJmETlYqDoVFgWdYdM"},
 		"RC:TxtMsg",
@@ -471,6 +525,7 @@ func TestRongCloud_SystemSend(t *testing.T) {
 		1,
 	)
 	t.Log(err)
+	t.Log(res)
 }
 
 func TestRongCloud_SystemBroadcast(t *testing.T) {
@@ -485,12 +540,13 @@ func TestRongCloud_SystemBroadcast(t *testing.T) {
 		Extra:   "helloExtra",
 	}
 
-	err := rc.SystemBroadcast(
+	res, err := rc.SystemBroadcast(
 		"7Szq13MKRVortoknTAk7W8",
 		"RC:TxtMsg",
 		&msg,
 	)
 	t.Log(err)
+	t.Log(res)
 }
 
 func TestRongCloud_SystemBroadcastOption(t *testing.T) {
@@ -505,13 +561,14 @@ func TestRongCloud_SystemBroadcastOption(t *testing.T) {
 		Extra:   "helloExtra",
 	}
 
-	err := rc.SystemBroadcast(
+	res, err := rc.SystemBroadcast(
 		"7Szq13MKRVortoknTAk7W8",
 		"RC:TxtMsg",
 		&msg,
 		WithMsgPushContent("thisisapush"),
 	)
 	t.Log(err)
+	t.Log(res)
 }
 
 func TestRongCloud_SystemSendTemplate(t *testing.T) {
@@ -547,12 +604,13 @@ func TestRongCloud_SystemSendTemplate(t *testing.T) {
 	var tpl []TemplateMsgContent
 	tpl = append(tpl, tpl1)
 	tpl = append(tpl, tpl2)
-	err := rc.SystemSendTemplate(
+	res, err := rc.SystemSendTemplate(
 		"7Szq13MKRVortoknTAk7W8",
 		"RC:TxtMsg",
 		msg,
 		tpl)
 	t.Log(err)
+	t.Log(res)
 }
 
 func TestRongCloud_HistoryGet(t *testing.T) {

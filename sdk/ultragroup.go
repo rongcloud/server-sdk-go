@@ -1258,21 +1258,21 @@ type PushExt struct {
 
 // UGMessagePublish 超级群消息发送
 // 文档：https://doc.rongcloud.cn/imserver/server/v1/message/msgsend/ultragroup
-func (rc *RongCloud) UGMessagePublish(fromUserId, objectName, content, pushContent, pushData, isPersisted, isCounted, isMentioned, contentAvailable, busChannel, extraContent string, expansion, unreadCountFlag bool, pushExt *PushExt, toGroupIds ...string) error {
+func (rc *RongCloud) UGMessagePublish(fromUserId, objectName, content, pushContent, pushData, isPersisted, isCounted, isMentioned, contentAvailable, busChannel, extraContent string, expansion, unreadCountFlag bool, pushExt *PushExt, toGroupIds ...string) (GroupMessageUIDs, error) {
 	if len(fromUserId) == 0 {
-		return RCErrorNewV2(1002, "param 'fromUserId' is required")
+		return GroupMessageUIDs{}, RCErrorNewV2(1002, "param 'fromUserId' is required")
 	}
 
 	if len(objectName) == 0 {
-		return RCErrorNewV2(1002, "param 'objectName' is required")
+		return GroupMessageUIDs{}, RCErrorNewV2(1002, "param 'objectName' is required")
 	}
 
 	if len(content) == 0 {
-		return RCErrorNewV2(1002, "param 'content' is required")
+		return GroupMessageUIDs{}, RCErrorNewV2(1002, "param 'content' is required")
 	}
 
 	if groupLen := len(toGroupIds); groupLen <= 0 || groupLen > 3 {
-		return RCErrorNewV2(1002, "invalid 'toGroupIds'")
+		return GroupMessageUIDs{}, RCErrorNewV2(1002, "invalid 'toGroupIds'")
 	}
 
 	req := httplib.Post(rc.rongCloudURI + "/message/ultragroup/publish." + ReqType)
@@ -1327,7 +1327,7 @@ func (rc *RongCloud) UGMessagePublish(fromUserId, objectName, content, pushConte
 	if pushExt != nil {
 		encPushExt, e := json.Marshal(pushExt)
 		if e != nil {
-			return e
+			return GroupMessageUIDs{}, e
 		}
 		body["pushExt"] = string(encPushExt)
 	}
@@ -1335,14 +1335,19 @@ func (rc *RongCloud) UGMessagePublish(fromUserId, objectName, content, pushConte
 	var err error
 	req, err = req.JSONBody(body)
 	if err != nil {
-		return err
+		return GroupMessageUIDs{}, err
 	}
 
-	if _, err = rc.doV2(req); err != nil {
-		return err
+	resp, err := rc.doV2(req)
+	if err != nil {
+		rc.urlError(err)
+		return GroupMessageUIDs{}, err
 	}
-
-	return nil
+	var groupMessageUIDS GroupMessageUIDs
+	if err := json.Unmarshal(resp, &groupMessageUIDS); err != nil {
+		return GroupMessageUIDs{}, err
+	}
+	return groupMessageUIDS, err
 }
 
 // UGMemberExists 查询用户是否在超级群中

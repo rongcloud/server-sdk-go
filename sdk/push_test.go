@@ -387,8 +387,7 @@ func TestRongCloud_PushSend(t *testing.T) {
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(p.Code)
-		t.Log(p.ID)
+		t.Log(p)
 	}
 
 	msg := TXTMsg{
@@ -417,7 +416,6 @@ func TestRongCloud_PushSend(t *testing.T) {
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(p.Code)
-		t.Log(p.ID)
+		t.Log(p)
 	}
 }

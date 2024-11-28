@@ -501,14 +501,14 @@ type UgMessageExtension struct {
 }
 
 // MessageExpansionSet : 设置消息扩展  /message/expansion/set.json
-//*
+// *
 // @param  msgUID:消息唯一标识 ID，可通过全量消息路由功能获取。详见全量消息路由。
 // @param  userId:操作者用户 ID，即需要为指定消息（msgUID）设置扩展信息的用户 ID。
 // @param  conversationType:会话类型。支持的会话类型包括：1（二人会话）、3（群组会话）。
 // @param  targetId:目标 ID，根据不同的 conversationType，可能是用户 ID 或群组 ID。
 // @param  extraKeyVal:消息自定义扩展内容，JSON 结构，以 Key、Value 的方式进行设置，如：{"type":"3"}，单条消息可设置 300 个扩展信息，一次最多可以设置 100 个。
 // @param  isSyncSender:设置操作会生成“扩展操作消息”。该字段指定“扩展操作消息”的发送者是否可在客户端接收该消息。https://doc.rongcloud.cn/imserver/server/v1/message/expansion#set
-//*/
+// */
 func (rc *RongCloud) MessageExpansionSet(msgUID, userId, conversationType, targetId, extraKeyVal string, isSyncSender int) error {
 	if len(msgUID) == 0 {
 		return RCErrorNew(1002, "Paramer 'msgUID' is required")
@@ -548,14 +548,14 @@ func (rc *RongCloud) MessageExpansionSet(msgUID, userId, conversationType, targe
 }
 
 // MessageExpansionDel : 删除消息扩展  /message/expansion/delete.json
-//*
+// *
 // @param  msgUID:消息唯一标识 ID，可通过全量消息路由功能获取。详见全量消息路由。
 // @param  userId:操作者用户 ID，即需要为指定消息（msgUID）删除扩展信息的用户 ID。
 // @param  conversationType:会话类型。支持的会话类型包括：1（二人会话）、3（群组会话）。
 // @param  targetId:目标 ID，根据不同的 conversationType，可能是用户 ID 或群组 ID。
 // @param  extraKeyVal:消息自定义扩展内容，JSON 结构，以 Key、Value 的方式进行设置，如：{"type":"3"}，单条消息可设置 300 个扩展信息，一次最多可以设置 100 个。
 // @param  isSyncSender:设置操作会生成“扩展操作消息”。该字段指定“扩展操作消息”的发送者是否可在客户端接收该消息。具体请看。https://doc.rongcloud.cn/imserver/server/v1/message/expansion#delete
-//*/
+// */
 func (rc *RongCloud) MessageExpansionDel(msgUID, userId, conversationType, targetId, extraKey string, isSyncSender int) error {
 	if len(msgUID) == 0 {
 		return RCErrorNew(1002, "Paramer 'msgUID' is required")
@@ -597,14 +597,14 @@ func (rc *RongCloud) MessageExpansionDel(msgUID, userId, conversationType, targe
 // 超级群消息修改
 
 // UGMessageModify : 超级群消息修改 /ultragroup/msg/modify.json
-//*
+// *
 // @param  groupId:超级群 ID
 // @param  fromUserId:消息发送者
 // @param  msgUID:消息唯一标识
 // @param  content:消息所发送内容 最大128k
 // @param  busChannel:频道 Id，支持英文字母、数字组合，最长为 20 个字符
 // @param  msgRandom:请求唯一标识,，保证一分钟之内的请求幂等
-//*/
+// */
 func (rc *RongCloud) UGMessageModify(groupId, fromUserId, msgUID, content string, options ...UgMessageExtension) ([]byte, error) {
 	if len(groupId) == 0 {
 		return nil, RCErrorNew(1002, "Paramer 'groupId' is required")
@@ -669,11 +669,11 @@ type UGMessageGetDataList struct {
 }
 
 // UGMessageGetObj  : 根据消息 ID 批量获取超级群消息 /ultragroup/msg/get
-//*
+// *
 // @param  groupId:超级群 ID
 // @param  msgList:消息参数数组   每个元素是UGMessageData
 // response： 返回结构体
-//*/
+// */
 func (rc *RongCloud) UGMessageGetObj(groupId string, msgList []UGMessageData, options ...MsgOption) (UGMessageGetData, error) {
 	respData := UGMessageGetData{}
 	if len(groupId) == 0 {
@@ -711,11 +711,11 @@ func (rc *RongCloud) UGMessageGetObj(groupId string, msgList []UGMessageData, op
 }
 
 // UGMessageGet : 根据消息 ID 批量获取超级群消息 /ultragroup/msg/get
-//*
+// *
 // @param  groupId:超级群 ID
 // @param  msgList:消息参数数组   每个元素是UGMessageData
 // response： 返回byte数组
-//*/
+// */
 func (rc *RongCloud) UGMessageGet(groupId string, msgList []UGMessageData, options ...MsgOption) ([]byte, error) {
 	if len(groupId) == 0 {
 		return nil, RCErrorNew(1002, "Paramer 'groupId' is required")
@@ -943,6 +943,16 @@ func (rc *RongCloud) SystemRecall(userId string, targetId string, messageId stri
 	return err
 }
 
+type UserMessageUID struct {
+	UserId     string `json:"userId"`
+	MessageUID string `json:"messageUID"`
+}
+
+// GroupInfo 群组信息
+type UserMessageUIDs struct {
+	UserMessageUIDArray []UserMessageUID `json:"messageUIDs"`
+}
+
 // PrivateSend 发送单聊消息方法（一个用户向多个用户发送消息，单条消息最大 128k。每分钟最多发送 6000 条信息，每次发送用户上限为 1000 人，如：一次发送 1000 人时，示为 1000 条消息。）
 /*
  *@param  senderID:发送人用户 ID。
@@ -962,13 +972,13 @@ func (rc *RongCloud) SystemRecall(userId string, targetId string, messageId stri
  */
 func (rc *RongCloud) PrivateSend(senderID string, targetID []string, objectName string, msg rcMsg,
 	pushContent, pushData string, count, verifyBlacklist, isPersisted, isIncludeSender, contentAvailable int,
-	options ...MsgOption) error {
+	options ...MsgOption) (UserMessageUIDs, error) {
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	if len(targetID) == 0 {
-		return RCErrorNew(1002, "Paramer 'targetID' is required")
+		return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'targetID' is required")
 	}
 
 	extraOptins := modifyMsgOptions(options)
@@ -984,7 +994,7 @@ func (rc *RongCloud) PrivateSend(senderID string, targetID []string, objectName 
 
 	msgr, err := msg.ToString()
 	if err != nil {
-		return err
+		return UserMessageUIDs{}, err
 	}
 	req.Param("content", msgr)
 	req.Param("pushData", pushData)
@@ -1010,11 +1020,16 @@ func (rc *RongCloud) PrivateSend(senderID string, targetID []string, objectName 
 		req.Param("extraContent", extraOptins.extraContent)
 	}
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return UserMessageUIDs{}, err
 	}
-	return err
+	var userMessageUIDS UserMessageUIDs
+	if err := json.Unmarshal(resp, &userMessageUIDS); err != nil {
+		return UserMessageUIDs{}, err
+	}
+	return userMessageUIDS, err
 }
 
 // 私聊状态消息发送
@@ -1025,14 +1040,14 @@ func (rc *RongCloud) PrivateSend(senderID string, targetID []string, objectName 
 // verifyBlacklist: 是否过滤发送人黑名单列表，0 表示为不过滤、 1 表示为过滤，默认为 0 不过滤。
 // isIncludeSender: 发送用户自己是否接收消息，0 表示为不接收，1 表示为接收，默认为 0 不接收。
 func (rc *RongCloud) PrivateStatusSend(senderID string, targetID []string, objectName string, msg rcMsg,
-	verifyBlacklist int, isIncludeSender int, options ...MsgOption) error {
+	verifyBlacklist int, isIncludeSender int, options ...MsgOption) (UserMessageUIDs, error) {
 
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	if len(targetID) == 0 {
-		return RCErrorNew(1002, "Paramer 'targetID' is required")
+		return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'targetID' is required")
 	}
 
 	extraOptins := modifyMsgOptions(options)
@@ -1048,7 +1063,7 @@ func (rc *RongCloud) PrivateStatusSend(senderID string, targetID []string, objec
 
 	msgr, err := msg.ToString()
 	if err != nil {
-		return err
+		return UserMessageUIDs{}, err
 	}
 	req.Param("content", msgr)
 	req.Param("verifyBlacklist", strconv.Itoa(verifyBlacklist))
@@ -1059,11 +1074,16 @@ func (rc *RongCloud) PrivateStatusSend(senderID string, targetID []string, objec
 		req.Param("busChannel", extraOptins.busChannel)
 	}
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return UserMessageUIDs{}, err
 	}
-	return err
+	var userMessageUIDS UserMessageUIDs
+	if err := json.Unmarshal(resp, &userMessageUIDS); err != nil {
+		return UserMessageUIDs{}, err
+	}
+	return userMessageUIDS, err
 }
 
 // PrivateRecall 撤回单聊消息方法
@@ -1124,9 +1144,9 @@ func (rc *RongCloud) PrivateRecall(senderID, targetID, uID string, sentTime int,
  *@return error
  */
 func (rc *RongCloud) PrivateSendTemplate(senderID, objectName string, template TXTMsg, content []TemplateMsgContent,
-	options ...MsgOption) error {
+	options ...MsgOption) (UserMessageUIDs, error) {
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	extraOptins := modifyMsgOptions(options)
@@ -1140,7 +1160,7 @@ func (rc *RongCloud) PrivateSendTemplate(senderID, objectName string, template T
 
 	for _, v := range content {
 		if v.TargetID == "" {
-			return RCErrorNew(1002, "Paramer 'TargetID' is required")
+			return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'TargetID' is required")
 		}
 		toUserIDs = append(toUserIDs, v.TargetID)
 		values = append(values, v.Data)
@@ -1150,7 +1170,7 @@ func (rc *RongCloud) PrivateSendTemplate(senderID, objectName string, template T
 
 	bytes, err := json.Marshal(template)
 	if err != nil {
-		return err
+		return UserMessageUIDs{}, err
 	}
 
 	param := map[string]interface{}{}
@@ -1172,14 +1192,29 @@ func (rc *RongCloud) PrivateSendTemplate(senderID, objectName string, template T
 
 	req, err = req.JSONBody(param)
 	if err != nil {
-		return err
+		return UserMessageUIDs{}, err
 	}
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return UserMessageUIDs{}, err
 	}
-	return err
+	var userMessageUIDS UserMessageUIDs
+	if err := json.Unmarshal(resp, &userMessageUIDS); err != nil {
+		return UserMessageUIDs{}, err
+	}
+	return userMessageUIDS, err
+}
+
+type GroupMessageUID struct {
+	GroupId    string `json:"groupId"`
+	MessageUID string `json:"messageUID"`
+}
+
+// GroupInfo 群组信息
+type GroupMessageUIDs struct {
+	GroupMessageUIDArray []GroupMessageUID `json:"messageUIDs"`
 }
 
 // GroupSend 发送群组消息方法（以一个用户身份向群组发送消息，单条消息最大 128k.每秒钟最多发送 20 条消息，每次最多向 3 个群组发送，如：一次向 3 个群组发送消息，示为 3 条消息。）
@@ -1198,13 +1233,13 @@ func (rc *RongCloud) PrivateSendTemplate(senderID, objectName string, template T
  *@return error
  */
 func (rc *RongCloud) GroupSend(senderID string, targetID, userID []string, objectName string, msg rcMsg,
-	pushContent string, pushData string, isPersisted, isIncludeSender int, options ...MsgOption) error {
+	pushContent string, pushData string, isPersisted, isIncludeSender int, options ...MsgOption) (GroupMessageUIDs, error) {
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return GroupMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	if len(targetID) == 0 {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return GroupMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	extraOptins := modifyMsgOptions(options)
@@ -1220,7 +1255,7 @@ func (rc *RongCloud) GroupSend(senderID string, targetID, userID []string, objec
 	msgr, err := msg.ToString()
 	if err != nil {
 		rc.urlError(err)
-		return err
+		return GroupMessageUIDs{}, err
 	}
 	req.Param("content", msgr)
 	req.Param("pushContent", pushContent)
@@ -1250,11 +1285,16 @@ func (rc *RongCloud) GroupSend(senderID string, targetID, userID []string, objec
 		req.Param("extraContent", extraOptins.extraContent)
 	}
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return GroupMessageUIDs{}, err
 	}
-	return err
+	var groupMessageUIDS GroupMessageUIDs
+	if err := json.Unmarshal(resp, &groupMessageUIDS); err != nil {
+		return GroupMessageUIDs{}, err
+	}
+	return groupMessageUIDS, err
 }
 
 // 群聊状态消息发送
@@ -1265,14 +1305,14 @@ func (rc *RongCloud) GroupSend(senderID string, targetID, userID []string, objec
 // verifyBlacklist: 是否过滤发送人黑名单列表，0 表示为不过滤、 1 表示为过滤，默认为 0 不过滤。
 // isIncludeSender: 发送用户自己是否接收消息，0 表示为不接收，1 表示为接收，默认为 0 不接收。
 func (rc *RongCloud) GroupStatusSend(senderID string, toGroupIds []string, objectName string, msg rcMsg,
-	verifyBlacklist int, isIncludeSender int, options ...MsgOption) error {
+	verifyBlacklist int, isIncludeSender int, options ...MsgOption) (GroupMessageUIDs, error) {
 
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return GroupMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	if len(toGroupIds) == 0 {
-		return RCErrorNew(1002, "Paramer 'toGroupIds' is required")
+		return GroupMessageUIDs{}, RCErrorNew(1002, "Paramer 'toGroupIds' is required")
 	}
 
 	extraOptins := modifyMsgOptions(options)
@@ -1288,7 +1328,7 @@ func (rc *RongCloud) GroupStatusSend(senderID string, toGroupIds []string, objec
 
 	msgr, err := msg.ToString()
 	if err != nil {
-		return err
+		return GroupMessageUIDs{}, err
 	}
 	req.Param("content", msgr)
 	req.Param("verifyBlacklist", strconv.Itoa(verifyBlacklist))
@@ -1297,11 +1337,16 @@ func (rc *RongCloud) GroupStatusSend(senderID string, toGroupIds []string, objec
 		req.Param("busChannel", extraOptins.busChannel)
 	}
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return GroupMessageUIDs{}, err
 	}
-	return err
+	var groupMessageUIDS GroupMessageUIDs
+	if err := json.Unmarshal(resp, &groupMessageUIDS); err != nil {
+		return GroupMessageUIDs{}, err
+	}
+	return groupMessageUIDS, err
 }
 
 // GroupRecall 撤回群聊消息
@@ -1413,6 +1458,16 @@ func (rc *RongCloud) GroupSendMention(senderID string, targetID []string, object
 	return err
 }
 
+type ChatRoomMessageUID struct {
+	ChatroomId string `json:"chatroomId"`
+	MessageUID string `json:"messageUID"`
+}
+
+// GroupInfo 群组信息
+type ChatRoomMessageUIDs struct {
+	ChatRoomMessageUIDArray []ChatRoomMessageUID `json:"messageUIDs"`
+}
+
 // ChatRoomSend 发送聊天室消息方法。（以一个用户身份向群组发送消息，单条消息最大 128k.每秒钟最多发送 20 条消息，每次最多向 3 个群组发送，如：一次向 3 个群组发送消息，示为 3 条消息。）
 /*
 *@param  senderID:发送人用户 ID 。
@@ -1422,13 +1477,13 @@ func (rc *RongCloud) GroupSendMention(senderID string, targetID []string, object
 *
 *@return error
  */
-func (rc *RongCloud) ChatRoomSend(senderID string, targetID []string, objectName string, msg rcMsg, isPersisted, isIncludeSender int) error {
+func (rc *RongCloud) ChatRoomSend(senderID string, targetID []string, objectName string, msg rcMsg, isPersisted, isIncludeSender int) (ChatRoomMessageUIDs, error) {
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return ChatRoomMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	if len(targetID) == 0 {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return ChatRoomMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	req := httplib.Post(rc.rongCloudURI + "/message/chatroom/publish." + ReqType)
@@ -1447,15 +1502,20 @@ func (rc *RongCloud) ChatRoomSend(senderID string, targetID []string, objectName
 
 	msgr, err := msg.ToString()
 	if err != nil {
-		return err
+		return ChatRoomMessageUIDs{}, err
 	}
 	req.Param("content", msgr)
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return ChatRoomMessageUIDs{}, err
 	}
-	return err
+	var chatRoomMessageUIDS ChatRoomMessageUIDs
+	if err := json.Unmarshal(resp, &chatRoomMessageUIDS); err != nil {
+		return ChatRoomMessageUIDs{}, err
+	}
+	return chatRoomMessageUIDS, err
 }
 
 // ChatRoomBroadcast 向应用内所有聊天室广播消息方法，此功能需开通 专属服务（以一个用户身份向群组发送消息，单条消息最大 128k.每秒钟最多发送 20 条消息。）
@@ -1497,16 +1557,16 @@ func (rc *RongCloud) ChatRoomBroadcast(senderID, objectName string, msg rcMsg, i
 // @param fromUserId  发送人用户 Id
 // @param objectName  消息类型，
 // @param content  发送消息内容
-func (rc *RongCloud) OnlineBroadcast(fromUserId string, objectName string, content string) ([]byte, error) {
+func (rc *RongCloud) OnlineBroadcast(fromUserId string, objectName string, content string) (BroadcastMessageUID, error) {
 
 	if fromUserId == "" {
-		return nil, RCErrorNew(1002, "Paramer 'fromUserId' is required")
+		return BroadcastMessageUID{}, RCErrorNew(1002, "Paramer 'fromUserId' is required")
 	}
 	if objectName == "" {
-		return nil, RCErrorNew(1002, "Paramer 'objectName' is required")
+		return BroadcastMessageUID{}, RCErrorNew(1002, "Paramer 'objectName' is required")
 	}
 	if content == "" {
-		return nil, RCErrorNew(1002, "Paramer 'content' is required")
+		return BroadcastMessageUID{}, RCErrorNew(1002, "Paramer 'content' is required")
 	}
 
 	req := httplib.Post(rc.rongCloudURI + "/message/online/broadcast." + ReqType)
@@ -1516,12 +1576,16 @@ func (rc *RongCloud) OnlineBroadcast(fromUserId string, objectName string, conte
 	req.Param("objectName", objectName)
 	req.Param("content", content)
 
-	code, err := rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return BroadcastMessageUID{}, err
 	}
-
-	return code, err
+	var broadcastMessageUIDS BroadcastMessageUID
+	if err := json.Unmarshal(resp, &broadcastMessageUIDS); err != nil {
+		return BroadcastMessageUID{}, err
+	}
+	return broadcastMessageUIDS, err
 }
 
 // SystemSend 一个用户向一个或多个用户发送系统消息，单条消息最大 128k，会话类型为 SYSTEM。
@@ -1540,14 +1604,14 @@ func (rc *RongCloud) OnlineBroadcast(fromUserId string, objectName string, conte
 *@return error
  */
 func (rc *RongCloud) SystemSend(senderID string, targetID []string, objectName string, msg rcMsg,
-	pushContent, pushData string, count, isPersisted int, options ...MsgOption) error {
+	pushContent, pushData string, count, isPersisted int, options ...MsgOption) (UserMessageUIDs, error) {
 
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	if len(targetID) == 0 {
-		return RCErrorNew(1002, "Paramer 'targetID' is required")
+		return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'targetID' is required")
 	}
 
 	extraOptins := modifyMsgOptions(options)
@@ -1562,7 +1626,7 @@ func (rc *RongCloud) SystemSend(senderID string, targetID []string, objectName s
 	req.Param("objectName", objectName)
 	msgr, err := msg.ToString()
 	if err != nil {
-		return err
+		return UserMessageUIDs{}, err
 	}
 
 	req.Param("content", msgr)
@@ -1579,11 +1643,20 @@ func (rc *RongCloud) SystemSend(senderID string, targetID []string, objectName s
 		req.Param("busChannel", extraOptins.busChannel)
 	}
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return UserMessageUIDs{}, err
 	}
-	return err
+	var userMessageUIDS UserMessageUIDs
+	if err := json.Unmarshal(resp, &userMessageUIDS); err != nil {
+		return UserMessageUIDs{}, err
+	}
+	return userMessageUIDS, err
+}
+
+type BroadcastMessageUID struct {
+	MessageUID string `json:"messageUID"`
 }
 
 // SystemBroadcast 给应用内所有用户发送消息方法，每小时最多发 2 次，每天最多发送 3 次（以一个用户身份向群组发送消息，单条消息最大 128k.每秒钟最多发送 20 条消息。）
@@ -1594,9 +1667,9 @@ func (rc *RongCloud) SystemSend(senderID string, targetID []string, objectName s
 *
 *@return error
  */
-func (rc *RongCloud) SystemBroadcast(senderID, objectName string, msg rcMsg, options ...MsgOption) error {
+func (rc *RongCloud) SystemBroadcast(senderID, objectName string, msg rcMsg, options ...MsgOption) (BroadcastMessageUID, error) {
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return BroadcastMessageUID{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	extraOptins := modifyMsgOptions(options)
@@ -1608,7 +1681,7 @@ func (rc *RongCloud) SystemBroadcast(senderID, objectName string, msg rcMsg, opt
 	req.Param("objectName", objectName)
 	msgr, err := msg.ToString()
 	if err != nil {
-		return err
+		return BroadcastMessageUID{}, err
 	}
 	req.Param("content", msgr)
 
@@ -1623,11 +1696,16 @@ func (rc *RongCloud) SystemBroadcast(senderID, objectName string, msg rcMsg, opt
 		req.Param("pushExt", extraOptins.pushExt)
 	}
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return BroadcastMessageUID{}, err
 	}
-	return err
+	var broadcastMessageUIDS BroadcastMessageUID
+	if err := json.Unmarshal(resp, &broadcastMessageUIDS); err != nil {
+		return BroadcastMessageUID{}, err
+	}
+	return broadcastMessageUIDS, err
 }
 
 // SystemSendTemplate 一个用户向一个或多个用户发送系统消息，单条消息最大 128k，会话类型为 SYSTEM
@@ -1640,9 +1718,9 @@ func (rc *RongCloud) SystemBroadcast(senderID, objectName string, msg rcMsg, opt
 *@return error
  */
 func (rc *RongCloud) SystemSendTemplate(senderID, objectName string, template TXTMsg, content []TemplateMsgContent,
-	options ...MsgOption) error {
+	options ...MsgOption) (UserMessageUIDs, error) {
 	if senderID == "" {
-		return RCErrorNew(1002, "Paramer 'senderID' is required")
+		return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'senderID' is required")
 	}
 
 	extraOptins := modifyMsgOptions(options)
@@ -1656,7 +1734,7 @@ func (rc *RongCloud) SystemSendTemplate(senderID, objectName string, template TX
 
 	for _, v := range content {
 		if v.TargetID == "" {
-			return RCErrorNew(1002, "Paramer 'TargetID' is required")
+			return UserMessageUIDs{}, RCErrorNew(1002, "Paramer 'TargetID' is required")
 		}
 		toUserIDs = append(toUserIDs, v.TargetID)
 		values = append(values, v.Data)
@@ -1666,7 +1744,7 @@ func (rc *RongCloud) SystemSendTemplate(senderID, objectName string, template TX
 
 	bytes, err := json.Marshal(template)
 	if err != nil {
-		return err
+		return UserMessageUIDs{}, err
 	}
 
 	param := map[string]interface{}{}
@@ -1686,11 +1764,16 @@ func (rc *RongCloud) SystemSendTemplate(senderID, objectName string, template TX
 
 	_, _ = req.JSONBody(param)
 
-	_, err = rc.do(req)
+	resp, err := rc.do(req)
 	if err != nil {
 		rc.urlError(err)
+		return UserMessageUIDs{}, err
 	}
-	return err
+	var userMessageUIDS UserMessageUIDs
+	if err := json.Unmarshal(resp, &userMessageUIDS); err != nil {
+		return UserMessageUIDs{}, err
+	}
+	return userMessageUIDS, err
 }
 
 // HistoryGet 按小时获取历史消息日志文件 URL，包含小时内应用产生的所有消息，消息日志文件无论是否已下载，3 天后将从融云服务器删除
