@@ -2,8 +2,9 @@ package sdk
 
 import (
 	"encoding/json"
-	"github.com/astaxie/beego/httplib"
 	"time"
+
+	"github.com/astaxie/beego/httplib"
 )
 
 // ListWordFilterResult listWordFilter返回结果
@@ -12,6 +13,7 @@ type ListWordFilterResult struct {
 }
 
 // SensitiveWord 敏感词
+// Type 0: 敏感词替换 1: 敏感词屏蔽
 type SensitiveWord struct {
 	Type        string `json:"type"`
 	Word        string `json:"word"`
@@ -51,6 +53,63 @@ func (rc *RongCloud) SensitiveAdd(keyword, replace string, sensitiveType int) er
 		rc.urlError(err)
 	}
 	return err
+}
+
+// SensitivePost结构体,replaceWord为可选字段
+type SensitivePost struct {
+	Word        string `json:"word"`
+	ReplaceWord string `json:"replaceWord,,omitempty"`
+}
+
+// SensitivePost数组结构体
+type SensitivePostArray struct {
+	Words []SensitivePost `json:"words"`
+}
+
+type SensitiveBatchAddResult struct {
+	Code        int `json:"code"`
+	RemainQuota int `json:"remainQuota"`
+}
+
+// SensitiveBatchAdd 批量添加敏感词
+/*
+*@param  words:敏感词数组
+*
+*@return error
+ */
+func (rc *RongCloud) SensitiveBatchAdd(words []SensitiveWord) (SensitiveBatchAddResult, error) {
+
+	// 遍历SensitiveWord数组转换成SensitivePost数组
+	var sensitivePostArray SensitivePostArray
+	for _, v := range words {
+		sensitivePostArray.Words = append(sensitivePostArray.Words, SensitivePost{
+			Word:        v.Word,
+			ReplaceWord: v.ReplaceWord,
+		})
+	}
+
+	sensitivePostJson, err := json.Marshal(sensitivePostArray)
+	if err != nil {
+		return SensitiveBatchAddResult{}, RCErrorNew(1002, "Marshal 'sensitivePostJson' err")
+	}
+
+	req := httplib.Post(rc.rongCloudURI + "/sensitiveword/batch/add." + ReqType)
+	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
+	rc.fillHeader(req)
+	req.Body(sensitivePostJson)
+	req.Header("Content-Type", "application/json")
+
+	res, err := rc.do(req)
+	if err != nil {
+		rc.urlError(err)
+		return SensitiveBatchAddResult{}, err
+	}
+	var ret SensitiveBatchAddResult
+	if err := json.Unmarshal(res, &ret); err != nil {
+		return SensitiveBatchAddResult{}, err
+	}
+
+	return ret, err
 }
 
 // SensitiveGetList 查询敏感词列表方法
