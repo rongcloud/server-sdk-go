@@ -545,9 +545,11 @@ func (rc *RongCloud) RemoveWhiteList(userId string, whiteList []string) error {
  * @test:
  * @msg: 获取某用户白名单列表（每秒限100次）
  * @param string userId
+ *@param: page :页数，默认为第一页。
+ *@param: size :每页条数，默认每页 1000 条
  * @return: WhiteList error
  */
-func (rc *RongCloud) QueryWhiteList(userId string) (WhiteList, error) {
+func (rc *RongCloud) QueryWhiteList(userId string, page, size int) (WhiteList, error) {
 	if userId == "" {
 		return WhiteList{}, RCErrorNew(1002, "Paramer 'userId' is required")
 	}
@@ -556,6 +558,8 @@ func (rc *RongCloud) QueryWhiteList(userId string) (WhiteList, error) {
 	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
 	rc.fillHeader(req)
 	req.Param("userId", userId)
+	req.Param("page", strconv.Itoa(page))
+	req.Param("size", strconv.Itoa(size))
 
 	resp, err := rc.do(req)
 	if err != nil {
@@ -771,10 +775,12 @@ func (rc *RongCloud) BlacklistRemove(id string, blacklist []string) error {
 // BlacklistGet 获取某用户的黑名单列表方法（每秒钟限 100 次）
 /*
 *@param  id:用户 ID。
+*@param: page :页数，默认为第一页。
+*@param: size :每页条数，默认每页 1000 条
 *
 *@return BlacklistResult error
  */
-func (rc *RongCloud) BlacklistGet(id string) (BlacklistResult, error) {
+func (rc *RongCloud) BlacklistGet(id string, page, size int) (BlacklistResult, error) {
 	if id == "" {
 		return BlacklistResult{}, RCErrorNew(1002, "Paramer 'id' is required")
 	}
@@ -783,6 +789,8 @@ func (rc *RongCloud) BlacklistGet(id string) (BlacklistResult, error) {
 	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
 	rc.fillHeader(req)
 	req.Param("userId", id)
+	req.Param("page", strconv.Itoa(page))
+	req.Param("size", strconv.Itoa(size))
 
 	resp, err := rc.do(req)
 	if err != nil {
