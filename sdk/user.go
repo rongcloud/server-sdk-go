@@ -34,6 +34,7 @@ type BlockListResult struct {
 // BlacklistResult 返回信息
 type BlacklistResult struct {
 	Users []string `json:"users"`
+	Next  string   `json:"next"`
 }
 
 // Tag TagSet 参数
@@ -57,6 +58,7 @@ type TagResult struct {
 // WhiteList QueryWhiteList 返回数据
 type WhiteList struct {
 	Users []string `json:"users"`
+	Next  string   `json:"next"`
 }
 
 // UserBlockPushPeriodDelete 删除用户免打扰时段 /user/blockPushPeriod/delete.json
@@ -549,7 +551,7 @@ func (rc *RongCloud) RemoveWhiteList(userId string, whiteList []string) error {
  *@param: size :每页条数，默认每页 1000 条
  * @return: WhiteList error
  */
-func (rc *RongCloud) QueryWhiteList(userId string, page, size int) (WhiteList, error) {
+func (rc *RongCloud) QueryWhiteList(userId string, pageToken string, size int) (WhiteList, error) {
 	if userId == "" {
 		return WhiteList{}, RCErrorNew(1002, "Paramer 'userId' is required")
 	}
@@ -558,7 +560,7 @@ func (rc *RongCloud) QueryWhiteList(userId string, page, size int) (WhiteList, e
 	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
 	rc.fillHeader(req)
 	req.Param("userId", userId)
-	req.Param("page", strconv.Itoa(page))
+	req.Param("pageToken", pageToken)
 	req.Param("size", strconv.Itoa(size))
 
 	resp, err := rc.do(req)
@@ -780,7 +782,7 @@ func (rc *RongCloud) BlacklistRemove(id string, blacklist []string) error {
 *
 *@return BlacklistResult error
  */
-func (rc *RongCloud) BlacklistGet(id string, page, size int) (BlacklistResult, error) {
+func (rc *RongCloud) BlacklistGet(id string, pageToken string, size int) (BlacklistResult, error) {
 	if id == "" {
 		return BlacklistResult{}, RCErrorNew(1002, "Paramer 'id' is required")
 	}
@@ -789,7 +791,7 @@ func (rc *RongCloud) BlacklistGet(id string, page, size int) (BlacklistResult, e
 	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
 	rc.fillHeader(req)
 	req.Param("userId", id)
-	req.Param("page", strconv.Itoa(page))
+	req.Param("pageToken", pageToken)
 	req.Param("size", strconv.Itoa(size))
 
 	resp, err := rc.do(req)

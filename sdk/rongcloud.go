@@ -57,8 +57,7 @@ const (
 	// RONGCLOUDSMSURI 融云默认 SMS API 地址
 	RONGCLOUDSMSURI = "http://api.sms.ronghub.com"
 	// RONGCLOUDURI 融云默认 API 地址
-	// RONGCLOUDURI = "http://api.rong-api.com"
-	RONGCLOUDURI = "http://api-aliqa.rongcloud.net"
+	RONGCLOUDURI = "http://api.rong-api.com"
 
 	// RONGCLOUDURI2 融云备用 API 地址
 	RONGCLOUDURI2 = "http://api-b.rong-api.com"

@@ -174,12 +174,13 @@ func TestQueryWhiteList(t *testing.T) {
 		os.Getenv("APP_SECRET"),
 	)
 
-	_, err := rc.QueryWhiteList("123")
+	res, err := rc.QueryWhiteList("123", "", 10)
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
 		t.Log("PASS")
 	}
+	t.Log(res)
 }
 
 func TestRemoveWhiteList(t *testing.T) {
@@ -290,6 +291,8 @@ func TestRongCloud_BlacklistGetList(t *testing.T) {
 	)
 	req, err := rc.BlacklistGet(
 		"4kIvGJmETlYqDoVFgWdYdM",
+		"",
+		100,
 	)
 	t.Log(err)
 	t.Log(req)
