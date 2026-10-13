@@ -370,13 +370,13 @@ func (rc *RongCloud) PushCustom(p []byte) ([]byte, error) {
 }
 
 // PushUser Sends a Push-only Notification to specified users in the app. A Push-only Notification will be delivered to the user regardless of whether they are using the app. The notification will only appear in the notification bar and will not carry message content. After logging into the app, the user will not see this content in the chat UI, and it will not be stored in the local database.
-func (rc *RongCloud) PushUser(notification *PushNotification, users ...string) error {
+func (rc *RongCloud) PushUser(notification *PushNotification, users ...string) (PushResult, error) {
 	if notification == nil {
-		return errors.New("Invalid notification")
+		return PushResult{}, errors.New("Invalid notification")
 	}
 
 	if userLens := len(users); userLens > 100 || userLens <= 0 {
-		return errors.New("Invalid users")
+		return PushResult{}, errors.New("Invalid users")
 	}
 
 	var err error
@@ -389,29 +389,24 @@ func (rc *RongCloud) PushUser(notification *PushNotification, users ...string) e
 		"notification": notification,
 	})
 	if err != nil {
-		return err
+		return PushResult{}, err
 	}
 
 	resp, err := rc.do(req)
 	if err != nil {
-		return err
+		return PushResult{}, err
 	}
 
-	data := make(map[string]interface{})
-	if err = json.Unmarshal(resp, &data); err != nil {
-		return err
+	var pushResult PushResult
+	if err = json.Unmarshal(resp, &pushResult); err != nil {
+		return PushResult{}, err
 	}
 
-	code, ok := data["code"]
-	if !ok {
-		return errors.New("Failed to request")
+	if pushResult.Code != http.StatusOK {
+		return pushResult, fmt.Errorf("Response error. code: %d", pushResult.Code)
 	}
 
-	if int(code.(float64)) != http.StatusOK {
-		return fmt.Errorf("Response error. code: %d", int(code.(float64)))
-	}
-
-	return nil
+	return pushResult, nil
 }
 
 // PushSend This method has the same sending mechanism as the /message/broadcast broadcast message method, but allows for more sending conditions. This feature is free to use in the development environment. In the production environment, you need to enable the IM Enterprise Plan in the advanced feature settings of the developer console and then enable it in the "Broadcast Messages and Push Notifications" section before you can use it.
