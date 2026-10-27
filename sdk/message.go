@@ -393,6 +393,7 @@ type msgOptions struct {
 	extraContent         string
 	isCounted            int
 	disableUpdateLastMsg bool
+	user                 MsgUserInfo
 }
 
 // MsgOption interface functions
@@ -496,6 +497,13 @@ func WithIsDelete(isDelete int) MsgOption {
 	}
 }
 
+// WithRecallUser sets the user information of the user who recalls a message.
+func WithRecallUser(user MsgUserInfo) MsgOption {
+	return func(options *msgOptions) {
+		options.user = user
+	}
+}
+
 // WithExtraContent Custom message extension information, which accepts key-value pairs in JSON string format.
 func WithExtraContent(extraContent string) MsgOption {
 	return func(options *msgOptions) {
@@ -535,6 +543,21 @@ func modifyMsgOptions(options []MsgOption) msgOptions {
 	}
 
 	return defaultMsgOptions
+}
+
+func addRecallUserParams(req *httplib.BeegoHTTPRequest, user MsgUserInfo) {
+	if user.ID != "" {
+		req.Param("userId", user.ID)
+	}
+	if user.Name != "" {
+		req.Param("userName", user.Name)
+	}
+	if user.Portrait != "" {
+		req.Param("userPortrait", user.Portrait)
+	}
+	if user.Extra != "" {
+		req.Param("userExtra", user.Extra)
+	}
 }
 
 // UgMessageExtension : Batch retrieves extended messages for ultra group messages based on message ID, optional.
@@ -839,6 +862,7 @@ func (rc *RongCloud) UGMessageRecall(userId, targetId, messageId string, sentTim
 	req.Param("disablePush", strconv.FormatBool(extOptions.disablePush))
 	req.Param("isAdmin", strconv.Itoa(extOptions.isAdmin))
 	req.Param("isDelete", strconv.Itoa(extOptions.isDelete))
+	addRecallUserParams(req, extOptions.user)
 
 	if extOptions.busChannel != "" {
 		req.Param("busChannel", extOptions.busChannel)
@@ -1003,6 +1027,7 @@ func (rc *RongCloud) ChatRoomRecall(userId string, targetId string, messageId st
 	req.Param("disablePush", strconv.FormatBool(extraOptins.disablePush))
 	req.Param("isAdmin", strconv.Itoa(extraOptins.isAdmin))
 	req.Param("isDelete", strconv.Itoa(extraOptins.isDelete))
+	addRecallUserParams(req, extraOptins.user)
 
 	if extraOptins.busChannel != "" {
 		req.Param("busChannel", extraOptins.busChannel)
@@ -1064,6 +1089,7 @@ func (rc *RongCloud) SystemRecall(userId string, targetId string, messageId stri
 	req.Param("disablePush", strconv.FormatBool(extraOptins.disablePush))
 	req.Param("isAdmin", strconv.Itoa(extraOptins.isAdmin))
 	req.Param("isDelete", strconv.Itoa(extraOptins.isDelete))
+	addRecallUserParams(req, extraOptins.user)
 
 	if extraOptins.busChannel != "" {
 		req.Param("busChannel", extraOptins.busChannel)
@@ -1254,6 +1280,7 @@ func (rc *RongCloud) PrivateRecall(senderID, targetID, uID string, sentTime int,
 	req.Param("disablePush", strconv.FormatBool(extraOptins.disablePush))
 	req.Param("isAdmin", strconv.Itoa(extraOptins.isAdmin))
 	req.Param("isDelete", strconv.Itoa(extraOptins.isDelete))
+	addRecallUserParams(req, extraOptins.user)
 
 	if extraOptins.busChannel != "" {
 		req.Param("busChannel", extraOptins.busChannel)
@@ -1519,6 +1546,7 @@ func (rc *RongCloud) GroupRecall(senderID, targetID, uID string, sentTime int,
 	req.Param("disablePush", strconv.FormatBool(extraOptins.disablePush))
 	req.Param("isAdmin", strconv.Itoa(extraOptins.isAdmin))
 	req.Param("isDelete", strconv.Itoa(extraOptins.isDelete))
+	addRecallUserParams(req, extraOptins.user)
 
 	if extraOptins.busChannel != "" {
 		req.Param("busChannel", extraOptins.busChannel)
