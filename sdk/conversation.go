@@ -7,10 +7,61 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/astaxie/beego/httplib"
 )
+
+// QueryConversationModel contains parameters for querying a user's conversations.
+type QueryConversationModel struct {
+	UserId    string `json:"userId"`              // Required user ID.
+	PageToken string `json:"pageToken,omitempty"` // Omit for the first page.
+	Size      *int   `json:"size,omitempty"`      // nil uses the server default (200); the server validates the range 1-200.
+}
+
+// ConversationQueryItem represents a conversation returned by the server.
+type ConversationQueryItem struct {
+	TargetId         string           `json:"targetId"`
+	BusChannel       string           `json:"busChannel"`
+	ConversationType ConversationType `json:"conversationType"`
+	Version          int64            `json:"version"`
+}
+
+// QueryConversationResult contains a page of conversations. Non-200 codes are returned as errors.
+type QueryConversationResult struct {
+	Conversations []ConversationQueryItem `json:"conversations"`
+	PageToken     string                  `json:"pageToken"` // Empty on the last page.
+}
+
+// ConversationQuery queries a user's conversations by page.
+// Pass the returned PageToken in the next request; an empty token indicates the last page.
+func (rc *RongCloud) ConversationQuery(model QueryConversationModel) (QueryConversationResult, error) {
+	result := QueryConversationResult{}
+	if strings.TrimSpace(model.UserId) == "" {
+		return result, RCErrorNew(1002, "Parameter 'userId' is required")
+	}
+
+	req := httplib.Post(rc.rongCloudURI + "/user/conversation/query.json")
+	req.SetTimeout(time.Second*rc.timeout, time.Second*rc.timeout)
+	rc.fillHeader(req)
+	req.Param("userId", model.UserId)
+	if model.PageToken != "" {
+		req.Param("pageToken", model.PageToken)
+	}
+	if model.Size != nil {
+		req.Param("size", strconv.Itoa(*model.Size))
+	}
+
+	body, err := rc.do(req)
+	if err != nil {
+		return result, err
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return result, err
+	}
+	return result, nil
+}
 
 // ConversationType Conversation type
 type ConversationType int
@@ -40,14 +91,14 @@ const (
 )
 
 // ConversationTop : Pin a conversation
-//*
-//@param userId	: Required	            User ID, the user to whom the conversation belongs
-//@param conversationType: Optional	    Conversation type. Supported conversation types include: 1 (one-to-one chat), 3 (group chat), 6 (system conversation).
-//@param targetId: Required	            Target ID to be set, which varies depending on the conversation type (user ID for one-to-one chat, group ID for group chat, system target ID for system conversation).
-//@param setTop	: Required	            true to pin, false to unpin.
+// *
+// @param userId	: Required	            User ID, the user to whom the conversation belongs
+// @param conversationType: Optional	    Conversation type. Supported conversation types include: 1 (one-to-one chat), 3 (group chat), 6 (system conversation).
+// @param targetId: Required	            Target ID to be set, which varies depending on the conversation type (user ID for one-to-one chat, group ID for group chat, system target ID for system conversation).
+// @param setTop	: Required	            true to pin, false to unpin.
 //
-//@return error
-//*/
+// @return error
+// */
 func (rc *RongCloud) ConversationTop(conversationType ConversationType, userId, targetId, setTop string) error {
 	if len(userId) == 0 {
 		return RCErrorNew(1002, "Paramer 'userId' is required")
