@@ -58,6 +58,21 @@ type Message struct {
 	Content              string `json:"content"`              // RongCloud's built-in messages. Please refer to the RCMsg Interface. For custom messages, implement the RCMsg Interface and convert it to a String for passing.
 	ObjectName           string `json:"objectName"`           // RongCloud's built-in messages or custom messages.
 	DisableUpdateLastMsg bool   `json:"disableUpdateLastMsg"` // Indicates whether to disable updating the last message. Default is false.
+	IsPersisted          *int   `json:"isPersisted"`          // Whether clients store the message: 0 disables storage, 1 enables it. Nil defaults to 1.
+	IsCounted            *int   `json:"isCounted"`            // Whether the message counts as unread: 0 disables counting, 1 enables it. Nil defaults to 1.
+}
+
+// MarshalJSON applies broadcast message defaults while preserving explicit zeros.
+func (m Message) MarshalJSON() ([]byte, error) {
+	type message Message
+	payload := message(m)
+	if payload.IsPersisted == nil {
+		payload.IsPersisted = IntPtr(1)
+	}
+	if payload.IsCounted == nil {
+		payload.IsCounted = IntPtr(1)
+	}
+	return json.Marshal(payload)
 }
 
 // IOSPush Settings for iOS platform push and additional information.

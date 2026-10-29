@@ -68,6 +68,20 @@ func main() {
 }
 ```
 
+### 查询用户会话
+
+`ConversationQuery` 调用 `/user/conversation/query.json`，`UserId` 必填。
+首页不传 `PageToken`，后续页传入上次返回的 token，返回 token 为空表示最后一页。
+`Size: nil` 使用服务端默认值 200；显式传入的页大小由服务端校验（1–200）。
+
+```go
+result, err := rc.ConversationQuery(sdk.QueryConversationModel{UserId: "userId"})
+if err != nil {
+	log.Fatal(err)
+}
+fmt.Println(result.Conversations, result.PageToken)
+```
+
 ### http 参数优化
 
 - http连接相关的性能优化
@@ -176,6 +190,7 @@ func main() {
 |                                                                                          | GroupMuteWhiteListUserAdd     | 添加群组禁言白名单用户，群组被禁言后，该群白名单中用户可以在群组中发送消息            | √      |
 |                                                                                          | GroupMuteWhiteListUserRemove  | 移除群组禁言白名单用户                                      | √      |
 |                                                                                          | GroupMuteWhiteListUserGetList | 获取群组禁言白名单用户列表                                    | √      |
+| [会话](https://github.com/rongcloud/server-sdk-go/blob/master/sdk/conversation_test.go) | ConversationQuery             | 分页查询用户会话 | √      |
 | [会话免打扰](https://github.com/rongcloud/server-sdk-go/blob/master/sdk/conversation_test.go) | ConversationMute              | 添加免打扰会话                                          | √      |
 |                                                                                          | ConversationUnmute            | 移除免打扰会话                                          | √      |
 |                                                                                          | ConversationGet               | 免打扰会话状态获取                                        | √      |

@@ -67,6 +67,20 @@ func main() {
 }
 ```
 
+### Query user conversations
+
+`ConversationQuery` calls `/user/conversation/query.json`. `UserId` is required.
+Omit `PageToken` for the first page; use the returned token for subsequent pages until it is empty.
+`Size: nil` uses the server default of 200; the server validates explicit sizes (1–200).
+
+```go
+result, err := rc.ConversationQuery(sdk.QueryConversationModel{UserId: "userId"})
+if err != nil {
+	log.Fatal(err)
+}
+fmt.Println(result.Conversations, result.PageToken)
+```
+
 ### HTTP parameter optimization
 
 - Optimize HTTP connections for better performance.
@@ -171,6 +185,7 @@ func main() {
 |                                                                                          | GroupMuteWhiteListUserAdd     | Add users to group mute allowlist                                                                                                                                | √      |
 |                                                                                          | GroupMuteWhiteListUserRemove  | Remove users from group mute allowlist                                                                                                                           | √      |
 |                                                                                          | GroupMuteWhiteListUserGetList | Get group mute allowlist                                                                                                                                         | √      |
+| [Conversations](https://github.com/rongcloud/server-sdk-go/blob/master/sdk/conversation_test.go) | ConversationQuery             | Query a user's conversations by page | √      |
 | [Conversation do not disturb](https://github.com/rongcloud/server-sdk-go/blob/master/sdk/conversation_test.go) | ConversationMute              | Mute conversation                                                                                                                                                | √      |
 |                                                                                          | ConversationUnmute            | Unmute conversation                                                                                                                                              | √      |
 |                                                                                          | ConversationGet               | Get conversation mute status                                                                                                                                     | √      |
@@ -227,6 +242,7 @@ func main() {
 |                                                                                          | GroupMuteWhiteListUserAdd     | Add users to group mute whitelist, allowing them to send messages even if the group is muted                                                                     | √      |
 |                                                                                          | GroupMuteWhiteListUserRemove  | Remove users from group mute whitelist                                                                                                                           | √      |
 |                                                                                          | GroupMuteWhiteListUserGetList | Get list of users in group mute whitelist                                                                                                                        | √      |
+| [Conversations](https://github.com/rongcloud/server-sdk-go/blob/master/sdk/conversation_test.go) | ConversationQuery             | Query a user's conversations by page | √      |
 | [Conversation mute](https://github.com/rongcloud/server-sdk-go/blob/master/sdk/conversation_test.go) | ConversationMute              | Mute a conversation                                                                                                                                              | √      |
 |                                                                                          | ConversationUnmute            | Unmute a conversation                                                                                                                                            | √      |
 |                                                                                          | ConversationGet               | Get conversation mute status                                                                                                                                     | √      |
